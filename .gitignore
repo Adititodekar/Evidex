@@ -1,0 +1,32 @@
+# Environment variables and credentials
+.env
+.env.*
+*.env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Large datasets & binaries (corpus is provided via /index endpoint)
+Train/
+Trainps1.zip
+*.pdf
+*.zip
+
+# Local data & index storage
+data/
+results/
+scratch/
+.pytest_cache/
+*.log
+
+# OS artifacts
+.DS_Store
+Thumbs.db
