@@ -1,0 +1,16 @@
+fastapi>=0.110.0
+uvicorn>=0.28.0
+python-multipart>=0.0.9
+pydantic>=2.6.0
+requests>=2.31.0
+httpx>=0.27.0
+pymupdf>=1.23.0
+pdfplumber>=0.10.0
+sentence-transformers>=2.5.0
+faiss-cpu>=1.8.0
+rank-bm25>=0.2.2
+numpy>=1.26.0
+rapidocr-onnxruntime>=1.3.0
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+langfuse>=2.0.0
