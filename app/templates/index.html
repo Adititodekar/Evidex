@@ -179,7 +179,7 @@
     /* Main Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 460px 1fr;
       gap: 1.5rem;
       align-items: start;
     }
@@ -229,8 +229,8 @@
       border: 1px solid var(--border-color);
       color: var(--text-main);
       border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.875rem;
+      padding: 0.75rem 0.95rem;
+      font-size: 0.925rem;
       font-family: inherit;
       transition: all 0.2s;
     }
@@ -243,8 +243,8 @@
 
     .form-textarea {
       resize: vertical;
-      min-height: 110px;
-      line-height: 1.45;
+      min-height: 280px;
+      line-height: 1.6;
     }
 
     .sample-chips {
@@ -546,49 +546,39 @@
     <!-- VIEW 1: Query Copilot -->
     <div id="view-copilot" class="dashboard-grid">
       <!-- Left: Query Controls -->
-      <div class="card">
+      <div class="card" style="display: flex; flex-direction: column; min-height: 520px;">
         <div class="card-title">
-          <span>Query Configuration</span>
+          <span>Research Query Copilot</span>
           <span style="font-size: 0.75rem; color: var(--accent-cyan);">POST /query</span>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="col-select">Collection</label>
+          <label class="form-label" for="col-select">Knowledge Base Collection</label>
           <select id="col-select" class="form-select">
-            <option value="train" selected>train (35 Filings & Handbooks)</option>
+            <option value="train" selected>train (35 Corporate Filings & Regulatory Handbooks)</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Pre-calibrated Benchmark Questions</label>
-          <div class="sample-chips">
-            <button class="chip-btn" onclick="selectSample(0)">
-              <span class="chip-tag">[A01 Credit Risk]</span> Gammon India debt defaults, recalled borrowings, and statutory audit red flags
-            </button>
-            <button class="chip-btn" onclick="selectSample(1)">
-              <span class="chip-tag">[A04 Debt Rec]</span> Inox Wind net-cash and interest-bearing debt facility reconciliation
-            </button>
-            <button class="chip-btn" onclick="selectSample(2)">
-              <span class="chip-tag">[A26 Contagion]</span> Compare Refex, Inox Wind, Metal Coatings & GRM group exposure
-            </button>
-            <button class="chip-btn" onclick="selectSample(3)">
-              <span class="chip-tag">[A30 Liquidity]</span> Compare Banque Saudi Fransi & Aldar funding risk and buffers
-            </button>
-            <button class="chip-btn" onclick="selectSample(4)">
-              <span class="chip-tag">[B32 Abstention]</span> Federal Reserve US GSIB stress capital buffer assignment
-            </button>
+        <div class="form-group" style="flex: 1; display: flex; flex-direction: column; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+            <label class="form-label" for="query-input" style="margin-bottom: 0; font-weight: 600; color: #e5e7eb;">Research Query / Question</label>
+            <span style="font-size: 0.72rem; color: var(--text-dim); background: rgba(31, 41, 55, 0.6); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-color);">Ctrl + Enter to run</span>
           </div>
+          <textarea 
+            id="query-input" 
+            class="form-textarea" 
+            style="flex: 1; min-height: 320px; font-size: 0.95rem; line-height: 1.6;"
+            placeholder="Type your question or financial research query here...&#10;&#10;e.g.:&#10;• What credit or default concerns exist regarding Gammon India? Cite statutory audit defaults, lender exposures, and default amounts.&#10;• Reconcile Inox Wind's borrowing facilities, interest rates, and net-cash position.&#10;• Compare funding risk and liquidity buffers between Banque Saudi Fransi and Aldar."
+          ></textarea>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="query-input">Query</label>
-          <textarea id="query-input" class="form-textarea" placeholder="Enter institutional research question..."></textarea>
+        <div style="display: flex; gap: 0.65rem;">
+          <button type="button" class="badge badge-link" style="padding: 0.4rem 0.75rem; border-radius: 8px; font-size: 0.775rem; cursor: pointer; border: 1px solid var(--border-color);" onclick="document.getElementById('query-input').value=''; document.getElementById('query-input').focus();">Clear</button>
+          <button id="btn-run" class="btn-submit" style="flex: 1;" onclick="runQuery()">
+            <span id="btn-text">Execute RERS Query</span>
+            <div id="btn-spinner" class="spinner hidden"></div>
+          </button>
         </div>
-
-        <button id="btn-run" class="btn-submit" onclick="runQuery()">
-          <span id="btn-text">Execute RERS Query</span>
-          <div id="btn-spinner" class="spinner hidden"></div>
-        </button>
       </div>
 
       <!-- Right: Answer & Audit Results -->
@@ -740,21 +730,14 @@ User Query<br>
     </div>
   </div>
 
-  <script>
-    const SAMPLES = [
-      "What credit, liquidity, or going-concern concerns exist regarding Gammon India? Cite statutory audit defaults, lender exposures, and default amounts from its annual report.",
-      "Reconcile Inox Wind's net-cash and interest-bearing debt position. What are the specific borrowing facilities, interest rates, and consolidated totals reported?",
-      "Compare how exposed Refex, Inox Wind, Metal Coatings and GRM Overseas are to related parties - loans, guarantees, sales and receivables. Who carries the biggest group-contagion risk relative to its size?",
-      "Compare how Banque Saudi Fransi and Aldar fund themselves and manage liquidity risk. Which is more exposed to a funding-market shock, and what buffers does each hold?",
-      "What individual stress capital buffer did the Fed assign to each US GSIB for the 2025-26 cycle, according to these capital proposals?"
-    ];
-
-    function selectSample(idx) {
-      document.getElementById('query-input').value = SAMPLES[idx];
-    }
-
-    // Set first sample on load
-    selectSample(0);
+    // Support Ctrl+Enter / Cmd+Enter to execute query
+    const queryInput = document.getElementById('query-input');
+    queryInput.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runQuery();
+      }
+    });
 
     function switchTab(tab) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
