@@ -62,7 +62,22 @@ def verify_and_rank_evidence(
     scored_chunks.sort(key=lambda x: x[0], reverse=True)
 
     verified = []
+    # 1. Guarantee top chunks per represented document
+    doc_counts = {}
     for sc, c in scored_chunks:
+        doc = c.get("document", c.get("doc_id", ""))
+        doc_counts[doc] = doc_counts.get(doc, 0)
+        if doc_counts[doc] < 3 and sc > 0.04:
+            c_copy = dict(c)
+            c_copy["score"] = round(sc, 4)
+            verified.append(c_copy)
+            doc_counts[doc] += 1
+
+    # 2. Fill remaining budget with highest overall scoring chunks
+    added_ids = {c["chunk_id"] for c in verified}
+    for sc, c in scored_chunks:
+        if c["chunk_id"] in added_ids:
+            continue
         if sc >= min_score_threshold or (len(verified) < min_floor and sc > 0.03):
             c_copy = dict(c)
             c_copy["score"] = round(sc, 4)

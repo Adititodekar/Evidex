@@ -114,6 +114,7 @@ def run_evaluation(
                 gold_chunks.append(c.get("content", ""))
 
         t0 = time.time()
+        print(f"[{idx}/{len(selected_questions)}] Querying and evaluating {qid}...", end=" ", flush=True)
 
         # 1. RERS Retrieval
         verified_chunks, trace, context_str = execute_retrieval_pipeline(query, col_idx, sibling_table)
@@ -140,10 +141,10 @@ def run_evaluation(
         results.append(metrics)
 
         print(
-            f"[{idx}/{len(selected_questions)}] {qid} | "
-            f"AnsP={metrics['answer_precision']:.2f} AnsR={metrics['answer_recall']:.2f} | "
+            f"Done! -> AnsP={metrics['answer_precision']:.2f} AnsR={metrics['answer_recall']:.2f} | "
             f"CtxP={metrics['context_precision']:.2f} CtxR={metrics['context_recall']:.2f} | "
-            f"Chunks={len(verified_chunks)} ({lat:.1f}s)"
+            f"Chunks={len(verified_chunks)} ({lat:.1f}s)",
+            flush=True
         )
 
     # Compute summary

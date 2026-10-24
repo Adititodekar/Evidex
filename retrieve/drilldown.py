@@ -30,15 +30,26 @@ def drilldown_evidence_set(
     # Determine top-k per facet based on breadth
     top_k_per_facet = 15 if breadth == "broad" else (8 if breadth == "medium" else 5)
     
-    # 2. Targeted Multi-Facet BM25 & Vector Retrieval
+    # 2. Targeted Multi-Facet BM25 & Vector Retrieval (with balanced multi-doc allocation)
     facet_hit_ids = set()
     for q_text in search_queries:
-        v_hits = collection_index.search_vectors(q_text, top_k=top_k_per_facet, filter_docs=surviving_docs)
-        b_hits = collection_index.search_bm25(q_text, top_k=top_k_per_facet, filter_docs=surviving_docs)
-        for cid, _ in v_hits:
-            facet_hit_ids.add(cid)
-        for cid, _ in b_hits:
-            facet_hit_ids.add(cid)
+        if len(surviving_docs) > 1 and len(surviving_docs) <= 8:
+            # Multi-document comparison: ensure proportional representation across every entity
+            per_doc_k = max(4, (top_k_per_facet // len(surviving_docs)) + 2)
+            for s_doc in surviving_docs:
+                v_hits = collection_index.search_vectors(q_text, top_k=per_doc_k, filter_docs=[s_doc])
+                b_hits = collection_index.search_bm25(q_text, top_k=per_doc_k, filter_docs=[s_doc])
+                for cid, _ in v_hits:
+                    facet_hit_ids.add(cid)
+                for cid, _ in b_hits:
+                    facet_hit_ids.add(cid)
+        else:
+            v_hits = collection_index.search_vectors(q_text, top_k=top_k_per_facet, filter_docs=surviving_docs)
+            b_hits = collection_index.search_bm25(q_text, top_k=top_k_per_facet, filter_docs=surviving_docs)
+            for cid, _ in v_hits:
+                facet_hit_ids.add(cid)
+            for cid, _ in b_hits:
+                facet_hit_ids.add(cid)
 
     # Batch fetch retrieved chunks
     if facet_hit_ids:
