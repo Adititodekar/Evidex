@@ -69,7 +69,8 @@ def execute_retrieval_pipeline(
         query,
         surviving_docs,
         collection_index,
-        breadth=understanding.get("breadth", "medium")
+        breadth=understanding.get("breadth", "medium"),
+        facets=understanding.get("facets", [])
     )
     trace.append({
         "step_name": "recursive_drilldown",
@@ -96,7 +97,7 @@ def execute_retrieval_pipeline(
     verified_chunks, ver_logs = verify_and_rank_evidence(
         widened_chunks,
         query,
-        max_evidence_cap=150
+        breadth=understanding.get("breadth", "medium")
     )
     trace.append({
         "step_name": "evidence_verification",
@@ -117,4 +118,13 @@ def execute_retrieval_pipeline(
         context_lines.append(f"[{doc_name} p.{pno}]\n{text}\n")
 
     formatted_context = "\n".join(context_lines)
+    trace.append({
+        "step_name": "context_assembly",
+        "description": "Ordered verified chunks by document and page, formatting exact citations",
+        "input": {"chunks_count": len(verified_chunks)},
+        "output": {
+            "formatted_context_length": len(formatted_context),
+            "documents_included": sorted(list(set(c["document"] for c in verified_chunks)))
+        }
+    })
     return verified_chunks, trace, formatted_context

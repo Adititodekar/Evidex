@@ -39,19 +39,22 @@ def verify_chunk_relevance_heuristic(query: str, chunk_text: str) -> float:
 def verify_and_rank_evidence(
     candidate_chunks: List[Dict[str, Any]],
     query: str,
-    max_evidence_cap: int = 150,
-    min_score_threshold: float = 0.08
+    breadth: str = "medium",
+    max_evidence_cap: int = None,
+    min_score_threshold: float = 0.10
 ) -> Tuple[List[Dict[str, Any]], List[str]]:
     """
     Filters and ranks candidate evidence chunks.
     Discards low-relevance filler to protect Context Precision while preserving all essential pages.
     """
     logs = []
+    
+    cap = max_evidence_cap or (16 if breadth == "narrow" else (24 if breadth == "medium" else 35))
+    min_floor = 8 if breadth == "narrow" else (12 if breadth == "medium" else 18)
+    
     scored_chunks = []
-
     for c in candidate_chunks:
         sc = verify_chunk_relevance_heuristic(query, c["text"])
-        # If chunk is from an explicitly selected table or leaf section, give base floor
         if c.get("chunk_type") == "table":
             sc += 0.05
         scored_chunks.append((sc, c))
@@ -60,18 +63,12 @@ def verify_and_rank_evidence(
 
     verified = []
     for sc, c in scored_chunks:
-        if sc >= min_score_threshold or len(verified) < 20:
+        if sc >= min_score_threshold or (len(verified) < min_floor and sc > 0.03):
             c_copy = dict(c)
             c_copy["score"] = round(sc, 4)
             verified.append(c_copy)
-        if len(verified) >= max_evidence_cap:
+        if len(verified) >= cap:
             break
 
-    # If verification was overly aggressive, retain at least top 25 candidate chunks
-    if len(verified) < 15 and len(candidate_chunks) >= 15:
-        verified = [dict(c, score=0.1) for c in candidate_chunks[:35]]
-        logs.append(f"Verification floor applied: retained top {len(verified)} chunks.")
-    else:
-        logs.append(f"Verified {len(verified)} chunks from {len(candidate_chunks)} candidates.")
-
+    logs.append(f"Verified {len(verified)} chunks from {len(candidate_chunks)} candidates (cap: {cap}).")
     return verified, logs

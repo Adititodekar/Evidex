@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 # Token cost estimates per 1,000,000 tokens
 MODEL_COSTS = {
+    "gemini-flash-lite-latest": {"input": 0.075, "output": 0.30},
     "gemini-3.5-flash-lite": {"input": 0.05, "output": 0.20},
     "gemini-2.5-flash": {"input": 0.075, "output": 0.30},
     "gemini-1.5-flash": {"input": 0.075, "output": 0.30},

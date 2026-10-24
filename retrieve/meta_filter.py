@@ -9,6 +9,8 @@ from typing import Dict, Any, List, Tuple
 
 logger = logging.getLogger(__name__)
 
+from retrieve.understand import extract_doc_keywords
+
 def filter_documents_by_metadata(
     understanding: Dict[str, Any],
     doc_cards: List[Dict[str, Any]],
@@ -31,7 +33,23 @@ def filter_documents_by_metadata(
             doc_id = card["doc_id"]
             ent = card.get("entity", "").lower()
             norm_id = doc_id.lower().replace("_", " ")
-            if any(qe in ent or qe in norm_id for qe in query_entities):
+            doc_kws = [k.lower() for k in extract_doc_keywords(doc_id, ent)]
+            
+            matched = False
+            for qe in query_entities:
+                clean_qe = qe.strip().lower()
+                if not clean_qe:
+                    continue
+                if clean_qe in ent or clean_qe in norm_id or ent in clean_qe:
+                    matched = True
+                    break
+                if any(kw in clean_qe for kw in doc_kws if len(kw) >= 3):
+                    matched = True
+                    break
+                if any(clean_qe in kw for kw in doc_kws if len(clean_qe) >= 3):
+                    matched = True
+                    break
+            if matched:
                 candidates.append(doc_id)
         logs.append(f"Entity filter matched {len(candidates)} documents for entities {query_entities}.")
 

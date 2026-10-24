@@ -214,10 +214,11 @@ class CollectionIndex:
         model = get_embed_model()
         q_emb = model.encode([query])
         faiss.normalize_L2(q_emb)
-        scores, indices = self.index.search(q_emb.astype(np.float32), min(top_k * 3, len(self.chunk_ids)))
+        filter_set = set(filter_docs) if filter_docs else None
+        search_k = min(len(self.chunk_ids), max(1500, top_k * 40)) if filter_set else min(top_k * 3, len(self.chunk_ids))
+        scores, indices = self.index.search(q_emb.astype(np.float32), search_k)
         
         results = []
-        filter_set = set(filter_docs) if filter_docs else None
         for score, idx in zip(scores[0], indices[0]):
             if idx < 0 or idx >= len(self.chunk_ids):
                 continue

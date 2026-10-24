@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 def split_long_text_into_sentences(text: str, min_words: int = 50, max_words: int = 250) -> List[str]:
     """
-    Splits long text into sentence-bounded chunks of approximately 60-250 words.
+    Splits long text into sentenc
+    e-bounded chunks of approximately 60-250 words.
     """
     sentences = re.split(r'(?<=[.!?])\s+', text)
     chunks = []
