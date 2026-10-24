@@ -110,6 +110,18 @@ class LLMClient:
         for attempt in range(max_retries):
             try:
                 resp = requests.post(self.base_url, headers=headers, json=payload, timeout=60)
+                if resp.status_code == 402:
+                    logger.warning(f"OpenCode returned 402 (Insufficient account funds). Falling back to secondary provider...")
+                    if settings.GEMINI_API_KEY:
+                        fb_headers = {"Authorization": f"Bearer {settings.GEMINI_API_KEY}", "Content-Type": "application/json"}
+                        fb_payload = dict(payload)
+                        fb_payload["model"] = settings.GEMINI_MODEL
+                        fb_resp = requests.post(settings.GEMINI_BASE_URL, headers=fb_headers, json=fb_payload, timeout=60)
+                        fb_resp.raise_for_status()
+                        fb_data = fb_resp.json()
+                        fb_content = fb_data["choices"][0]["message"]["content"]
+                        parsed = self._safe_json_parse(fb_content)
+                        return parsed, {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "latency_s": round(time.time() - t0, 3), "model": settings.GEMINI_MODEL}
                 if resp.status_code == 429:
                     last_error = f"429 Too Many Requests: {resp.text}"
                     if "QuotaFailure" in resp.text or "per day" in resp.text:
@@ -180,6 +192,17 @@ class LLMClient:
         for attempt in range(max_retries):
             try:
                 resp = requests.post(self.base_url, headers=headers, json=payload, timeout=90)
+                if resp.status_code == 402:
+                    logger.warning("OpenCode returned 402 (Insufficient account funds). Falling back to secondary provider...")
+                    if settings.GEMINI_API_KEY:
+                        fb_headers = {"Authorization": f"Bearer {settings.GEMINI_API_KEY}", "Content-Type": "application/json"}
+                        fb_payload = dict(payload)
+                        fb_payload["model"] = settings.GEMINI_MODEL
+                        fb_resp = requests.post(settings.GEMINI_BASE_URL, headers=fb_headers, json=fb_payload, timeout=90)
+                        fb_resp.raise_for_status()
+                        fb_data = fb_resp.json()
+                        fb_content = fb_data["choices"][0]["message"]["content"]
+                        return fb_content.strip(), {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "latency_s": round(time.time() - t0, 3), "model": settings.GEMINI_MODEL}
                 resp.raise_for_status()
                 data = resp.json()
                 content = data["choices"][0]["message"]["content"] or ""
