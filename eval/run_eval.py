@@ -68,9 +68,21 @@ def run_evaluation(
     print(f"Collection: '{collection_name}' | Model: '{settings.ANSWER_MODEL}'")
     print(f"=======================================================\n")
 
-    # Initialize Evaluator
+    # Initialize Evaluator with resilient adapter for JSON array outputs
+    class RobustJudgeClient(OpenCodeClient):
+        def call_structured(self, system_prompt: str, user_prompt: str, max_tokens: int = 10000,
+                             temperature: float = 0, max_retries: int = 3) -> dict:
+            data = super().call_structured(system_prompt, user_prompt, max_tokens, temperature, max_retries)
+            if isinstance(data, list):
+                if "points" in user_prompt:
+                    return {"points": data}
+                elif "verdicts" in user_prompt:
+                    return {"verdicts": data}
+                return {"items": data}
+            return data
+
     api_key = settings.GEMINI_API_KEY or settings.OPENCODE_API_KEY
-    judge_client = OpenCodeClient(
+    judge_client = RobustJudgeClient(
         api_key=api_key,
         model=settings.GEMINI_MODEL,
         base_url=settings.GEMINI_BASE_URL
