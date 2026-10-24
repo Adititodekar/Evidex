@@ -15,6 +15,8 @@
 | 2026-10-24 07:15 | Baseline Evaluation (70 Tune) | Full 70-question tune split proxy evaluation. Measured document recall, page recall, page precision, returned vs gold chunk count. | Overall Doc Rec: 66.59%, Doc Prec: 62.76%, Page Rec: 18.28%, Page Prec: 25.34%, Ret Chunks: 30.2 vs Gold Chunks: 92.5. Baseline 15-35 chunk budget identified as primary bottleneck. | COMPLETED |
 | 2026-10-24 09:20 | M6+ Observability: Langfuse Dev Set Traces | Built `eval/export_langfuse_traces.py` logging per-query cost (USD), latency (s), tokens, 9-step hierarchical traces, and official evaluator scores. Exported dev set evaluation to `eval/langfuse_dev_export.json`, `eval/langfuse_dev_export.csv`, and `eval/LANGFUSE_DEV_TRACE_REPORT.md`. | Dev Set batch evaluated: Avg Cost: $0.00024/query, Avg Latency: 38.6s, official evaluation scores recorded, Langfuse cloud trace links generated. | PASSED |
 | 2026-10-24 09:30 | Production Web Dashboard & Server Launch | Created responsive dark-mode Web Dashboard at `app/templates/index.html` (Query Copilot, Langfuse Dev Traces, and RERS Architecture tabs). Launched Uvicorn server on `http://127.0.0.1:8000`. | Browser subagent verified 100% UI rendering and zero console errors; `test_eval_untouched.py` PASSED (hash intact). | RUNNING |
+| 2026-10-24 10:38 | Live Public HTTPS Deployment | Deployed live Cloudflare tunnel (`https://democrat-prep-edward-choice.trycloudflare.com`). Enables zero-install remote access to interactive Web Dashboard, OpenAPI Swagger `/docs`, and Langfuse exports. | Verified live connectivity over HTTPS; browser subagent verified remote UI and trace loading. | ACTIVE |
 
 ---
+
 

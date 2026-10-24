@@ -7,6 +7,14 @@
 [![Langfuse: v5](https://img.shields.io/badge/Langfuse-v5%20Tracing-orange.svg)](https://cloud.langfuse.com/)
 [![Docker: Ready](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 [![Evaluator: 100% Untouched](https://img.shields.io/badge/Official%20Evaluator-SHA256%20Verified-success.svg)](eval/official_eval.py)
+[![Live: Cloudflare Tunnel](https://img.shields.io/badge/Live%20Deployment-HTTPS%20Online-success.svg)](https://democrat-prep-edward-choice.trycloudflare.com/)
+
+> [!TIP]
+> **Live Public Deployment (Zero-Install Remote Judge Access)**:  
+> • 🌐 **Interactive Web Dashboard**: [https://democrat-prep-edward-choice.trycloudflare.com/](https://democrat-prep-edward-choice.trycloudflare.com/)  
+> • ⚡ **Interactive Swagger API Docs**: [https://democrat-prep-edward-choice.trycloudflare.com/docs](https://democrat-prep-edward-choice.trycloudflare.com/docs)  
+> • 🩺 **System Health Check**: [https://democrat-prep-edward-choice.trycloudflare.com/health](https://democrat-prep-edward-choice.trycloudflare.com/health)  
+> • 📊 **Langfuse Dev Set Trace Export**: [https://democrat-prep-edward-choice.trycloudflare.com/api/langfuse/export](https://democrat-prep-edward-choice.trycloudflare.com/api/langfuse/export)
 
 ---
 
