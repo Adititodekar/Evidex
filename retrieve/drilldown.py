@@ -1,3 +1,4 @@
+import re
 import logging
 from typing import Dict, Any, List
 
@@ -27,15 +28,28 @@ def drilldown_evidence_set(
             if need and need not in search_queries:
                 search_queries.append(need)
 
+    # Add entity-stripped clean query for focused keyword / ratio matching
+    clean_kw_query = query
+    for doc in surviving_docs:
+        doc_base = re.sub(r'\.pdf$', '', doc, flags=re.IGNORECASE).replace('_', ' ').replace('-', ' ')
+        for token in doc_base.split():
+            if len(token) > 2:
+                clean_kw_query = re.sub(rf'\b{re.escape(token)}\b', '', clean_kw_query, flags=re.IGNORECASE)
+
+    clean_kw_query = re.sub(r'\b(what|when|where|which|who|whom|why|how|was|is|are|the|end|of|in|at|for|fy\s*20\d{2}|20\d{2})\b', '', clean_kw_query, flags=re.IGNORECASE)
+    clean_kw_query = re.sub(r'\s+', ' ', clean_kw_query).strip()
+    if clean_kw_query and len(clean_kw_query) > 3 and clean_kw_query not in search_queries:
+        search_queries.append(clean_kw_query)
+
     # Determine top-k per facet based on breadth
-    top_k_per_facet = 65 if breadth == "broad" else (30 if breadth == "medium" else 15)
+    top_k_per_facet = 80 if breadth == "broad" else (45 if breadth == "medium" else 30)
     
     # 2. Targeted Multi-Facet BM25 & Vector Retrieval (with balanced multi-doc allocation)
     facet_hit_ids = set()
     for q_text in search_queries:
         if len(surviving_docs) > 1 and len(surviving_docs) <= 8:
             # Multi-document comparison: ensure proportional representation across every entity
-            per_doc_k = max(10, (top_k_per_facet // len(surviving_docs)) + 4)
+            per_doc_k = max(15, (top_k_per_facet // len(surviving_docs)) + 6)
             for s_doc in surviving_docs:
                 v_hits = collection_index.search_vectors(q_text, top_k=per_doc_k, filter_docs=[s_doc])
                 b_hits = collection_index.search_bm25(q_text, top_k=per_doc_k, filter_docs=[s_doc])

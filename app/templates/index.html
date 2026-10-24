@@ -782,8 +782,16 @@ User Query<br>
         });
 
         if (!resp.ok) {
-          const err = await resp.json();
-          throw new Error(err.detail || "Query failed");
+          let errorMsg = `HTTP ${resp.status}: ${resp.statusText || 'Request failed'}`;
+          try {
+            const err = await resp.json();
+            if (err && err.detail) errorMsg = err.detail;
+          } catch (_) {
+            if (resp.status === 502 || resp.status === 504) {
+              errorMsg = `Gateway Timeout (${resp.status}): The query took longer than the proxy edge limit (100s). For wide multi-document comparison queries, access directly via http://127.0.0.1:8000/ to avoid proxy timeouts.`;
+            }
+          }
+          throw new Error(errorMsg);
         }
 
         const data = await resp.json();

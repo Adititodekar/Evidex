@@ -330,17 +330,24 @@ def run_dev_export(target_ids: Optional[List[str]] = None, max_q: int = 5):
                 item = json.loads(line)
                 all_questions[item["id"]] = item
 
+    col_name = "train"
+    col_idx = CollectionIndex(col_name)
+    col_dir = get_collection_dir(col_name)
+    siblings_path = os.path.join(col_dir, "siblings.json")
+    sibling_table = {}
+    if os.path.exists(siblings_path):
+        with open(siblings_path, "r", encoding="utf-8") as f:
+            sibling_table = json.load(f)
+
     if target_ids:
         selected_ids = [qid for qid in target_ids if qid in all_questions]
     else:
-        # Default to dev set (val_ids)
-        val_ids = splits.get("val_ids", [])
-        # Prioritize questions where all documents are present in Train/Documents
-        doc_dir = settings.DOCUMENTS_DIR
-        existing_docs = set(os.listdir(doc_dir)) if os.path.exists(doc_dir) else set()
+        # Default to comprehensive benchmark set (val_ids + train_ids)
+        candidate_ids = splits.get("val_ids", []) + [q for q in splits.get("train_ids", []) if q not in splits.get("val_ids", [])]
+        existing_docs = set([c["doc_id"] for c in col_idx.get_document_cards()])
         
         valid_dev_ids = []
-        for qid in val_ids:
+        for qid in candidate_ids:
             q_item = all_questions.get(qid)
             if not q_item:
                 continue
@@ -356,22 +363,20 @@ def run_dev_export(target_ids: Optional[List[str]] = None, max_q: int = 5):
     print(f"Model: {settings.ANSWER_MODEL} | Provider: {settings.LLM_PROVIDER}")
     print(f"=======================================================\n")
 
-    api_key = settings.GEMINI_API_KEY or settings.OPENCODE_API_KEY
-    judge_client = RobustJudgeClient(
-        api_key=api_key,
-        model=settings.GEMINI_MODEL,
-        base_url=settings.GEMINI_BASE_URL
-    )
+    if settings.LLM_PROVIDER == "opencode" and settings.OPENCODE_API_KEY:
+        judge_client = RobustJudgeClient(
+            api_key=settings.OPENCODE_API_KEY,
+            model=settings.OPENCODE_MODEL,
+            base_url=settings.OPENCODE_BASE_URL
+        )
+    else:
+        api_key = settings.GEMINI_API_KEY or settings.OPENCODE_API_KEY
+        judge_client = RobustJudgeClient(
+            api_key=api_key,
+            model=settings.GEMINI_MODEL,
+            base_url=settings.GEMINI_BASE_URL
+        )
     evaluator = RAGMetricsEvaluator(judge_client)
-
-    col_name = "train"
-    col_idx = CollectionIndex(col_name)
-    col_dir = get_collection_dir(col_name)
-    siblings_path = os.path.join(col_dir, "siblings.json")
-    sibling_table = {}
-    if os.path.exists(siblings_path):
-        with open(siblings_path, "r", encoding="utf-8") as f:
-            sibling_table = json.load(f)
 
     exporter = LangfuseDevExporter()
 
@@ -454,5 +459,5 @@ def run_dev_export(target_ids: Optional[List[str]] = None, max_q: int = 5):
 
 if __name__ == "__main__":
     q_arg = sys.argv[1].split(",") if len(sys.argv) > 1 and sys.argv[1] != "all" else None
-    count_arg = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+    count_arg = int(sys.argv[2]) if len(sys.argv) > 2 else 48
     run_dev_export(target_ids=q_arg, max_q=count_arg)

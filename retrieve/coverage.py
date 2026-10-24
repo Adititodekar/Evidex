@@ -9,14 +9,14 @@ from typing import Dict, Any, List, Tuple
 logger = logging.getLogger(__name__)
 
 MIN_BUDGETS = {
-    "narrow": 5,
-    "medium": 15,
-    "broad": 40
+    "narrow": 15,
+    "medium": 35,
+    "broad": 65
 }
 
 MAX_BUDGETS = {
-    "narrow": 30,
-    "medium": 80,
+    "narrow": 65,
+    "medium": 120,
     "broad": 220
 }
 

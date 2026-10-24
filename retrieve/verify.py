@@ -59,6 +59,13 @@ def verify_chunk_relevance_heuristic(query: str, chunk_text: str) -> float:
         if rf_matches > 0:
             score += min(0.35, rf_matches * 0.07)
 
+    # High-value exact phrase / key ratio bonus
+    q_low = query.lower()
+    c_low = chunk_text.lower()
+    for phrase in ["coverage ratio", "npl", "liquidity buffer", "risk management", "capital deduction", "stress capital", "allowance for credit"]:
+        if phrase in q_low and phrase in c_low:
+            score += 0.25
+
     return score
 
 def verify_chunks_batched_llm(
@@ -78,7 +85,7 @@ def verify_chunks_batched_llm(
 
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
-        numbered = [{"id": idx, "text": c.get("text", "")[:450]} for idx, c in enumerate(batch)]
+        numbered = [{"id": idx, "text": c.get("text", "")[:1200]} for idx, c in enumerate(batch)]
         user_prompt = (
             f"User query:\n{query}\n\n"
             "Retrieved chunks:\n"
@@ -126,8 +133,8 @@ def verify_and_rank_evidence(
     logs = []
     
     budgets = {
-        "narrow": 12,
-        "medium": 45,
+        "narrow": 25,
+        "medium": 65,
         "broad": 160
     }
     cap = max_evidence_cap or budgets.get(breadth, 45)
@@ -143,7 +150,7 @@ def verify_and_rank_evidence(
     scored_candidates.sort(key=lambda x: x[0], reverse=True)
 
     # 2. Pick candidates to verify with LLM matching the breadth cap
-    pool_size = 35 if breadth == "narrow" else (80 if breadth == "medium" else 220)
+    pool_size = 45 if breadth == "narrow" else (90 if breadth == "medium" else 220)
     pool_to_verify = [c for _, c in scored_candidates[:pool_size]]
     llm_verdicts = verify_chunks_batched_llm(query, pool_to_verify, batch_size=50)
 
@@ -164,7 +171,7 @@ def verify_and_rank_evidence(
     doc_counts = {}
     distinct_docs = set(c.get("document", c.get("doc_id", "")) for c in llm_verified)
     num_docs = max(1, len(distinct_docs))
-    per_doc_limit = max(6, cap // num_docs)
+    per_doc_limit = max(8, cap // num_docs)
 
     for c in llm_verified:
         doc = c.get("document", c.get("doc_id", ""))
@@ -182,14 +189,17 @@ def verify_and_rank_evidence(
         if len(final_verified) >= cap:
             break
 
-    # 5. Fallback ONLY if zero chunks were verified
+    # 5. Fallback & Guard against starvation: ensure minimum evidence floor only if verified chunks are scarce
     if not final_verified and scored_candidates:
-        fb_count = 3 if breadth == "narrow" else 5
-        for sc, c in scored_candidates[:fb_count]:
-            if sc > 0.05:
+        min_floor = 2 if breadth == "narrow" else (5 if breadth == "medium" else 15)
+        for sc, c in scored_candidates:
+            if c["chunk_id"] not in added_ids and sc > 0.05:
                 c_copy = dict(c)
                 c_copy["score"] = round(sc, 4)
                 final_verified.append(c_copy)
+                added_ids.add(c["chunk_id"])
+            if len(final_verified) >= min_floor:
+                break
 
     logs.append(f"Final selected {len(final_verified)} verified chunks (cap: {cap}).")
     return final_verified, logs

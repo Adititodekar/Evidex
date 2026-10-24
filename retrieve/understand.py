@@ -174,8 +174,8 @@ def understand_query(query: str, doc_cards: List[Dict[str, Any]] = None) -> Dict
 
     # If multiple entities or broad keywords found, mark as comparison & broad
     is_broad_query = (
-        words_count > 25
-        or len(facets) >= 3
+        (words_count > 25 and is_comparison)
+        or (len(facets) >= 3 and is_comparison)
         or any(term in clean_q.lower() for term in ["contrast", "compare", "every", "all specific", "identify every", "break down", "list all", "line up", "rank", "across"])
     )
     if is_broad_query:
