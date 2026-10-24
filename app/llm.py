@@ -124,11 +124,17 @@ class LLMClient:
                         return parsed, {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "latency_s": round(time.time() - t0, 3), "model": settings.GEMINI_MODEL}
                 if resp.status_code == 429:
                     last_error = f"429 Too Many Requests: {resp.text}"
-                    if "QuotaFailure" in resp.text or "per day" in resp.text:
+                    if ("per day" in resp.text.lower() or "perday" in resp.text.lower() or "daily" in resp.text.lower()) and "minute" not in resp.text.lower():
                         logger.warning("Daily quota exhausted. Failing fast to fallback.")
                         raise RuntimeError(last_error)
-                    sleep_time = 4.0 * (attempt + 1)
-                    logger.warning(f"Rate limited (429). Backing off for {sleep_time}s...")
+                    
+                    # Extract suggested retryDelay if provided by Gemini
+                    m_delay = re.search(r'"retryDelay":\s*"(\d+)s"', resp.text)
+                    if m_delay:
+                        sleep_time = min(float(m_delay.group(1)) + 1.0, 35.0)
+                    else:
+                        sleep_time = 4.0 * (attempt + 1)
+                    logger.warning(f"Rate limited (429). Backing off for {sleep_time:.1f}s...")
                     time.sleep(sleep_time)
                     continue
                 resp.raise_for_status()

@@ -1,0 +1,237 @@
+[
+  {
+    "id": "B04",
+    "type": "B",
+    "query": "We are a domestic regional bank of roughly $150 billion. Compare what the 2023 U...",
+    "gold_docs": [
+      "fact-sheet-SUMMARY.pdf",
+      "board-memo-basel-gsib-standardized-approach.pdf",
+      "91fr14908.pdf",
+      "BCBS-Basel-Endgame.pdf",
+      "gsib-memo-change-summary.pdf"
+    ],
+    "ret_docs": [
+      "91fr14952.pdf"
+    ],
+    "doc_rec": 0.0,
+    "page_rec": 0.0,
+    "page_prec": 0.0,
+    "ret_chunks": 24,
+    "gold_chunks": 152,
+    "gold_pages_count": 76,
+    "cause": "WRONG_DOCUMENT: Surviving docs missed gold doc entirely"
+  },
+  {
+    "id": "C04",
+    "type": "C",
+    "query": "Our credit metrics have improved for three years, yet economists expect a downtu...",
+    "gold_docs": [
+      "FDIC Interagency CECL Statement.pdf",
+      "OCC ACL Handbook.pdf",
+      "ASU_2016-13.pdf",
+      "FDIC FAQ.pdf",
+      "Implementation Handbook.pdf"
+    ],
+    "ret_docs": [
+      "BaselFramework.pdf",
+      "BCBS-Basel-Endgame.pdf",
+      "BCBS-CreditValuation.pdf",
+      "BCBS-MarketRisk.pdf"
+    ],
+    "doc_rec": 0.0,
+    "page_rec": 0.0,
+    "page_prec": 0.0,
+    "ret_chunks": 35,
+    "gold_chunks": 84,
+    "gold_pages_count": 61,
+    "cause": "WRONG_DOCUMENT: Surviving docs missed gold doc entirely"
+  },
+  {
+    "id": "C12",
+    "type": "C",
+    "query": "How does moving to lifetime loss reserving feed through to a bank's regulatory c...",
+    "gold_docs": [
+      "OCC ACL Handbook.pdf",
+      "91fr14908.pdf",
+      "FDIC FAQ.pdf"
+    ],
+    "ret_docs": [
+      "FDIC Interagency CECL Statement.pdf"
+    ],
+    "doc_rec": 0.0,
+    "page_rec": 0.0,
+    "page_prec": 0.0,
+    "ret_chunks": 35,
+    "gold_chunks": 25,
+    "gold_pages_count": 15,
+    "cause": "WRONG_DOCUMENT: Surviving docs missed gold doc entirely"
+  },
+  {
+    "id": "C16",
+    "type": "C",
+    "query": "Critics argue that booking a full lifetime loss the day a loan is made misrepres...",
+    "gold_docs": [
+      "ASU_2016-13.pdf"
+    ],
+    "ret_docs": [
+      "FASB ASC 326 Update.pdf",
+      "FDIC Interagency CECL Statement.pdf"
+    ],
+    "doc_rec": 0.0,
+    "page_rec": 0.0,
+    "page_prec": 0.0,
+    "ret_chunks": 35,
+    "gold_chunks": 28,
+    "gold_pages_count": 19,
+    "cause": "WRONG_DOCUMENT: Surviving docs missed gold doc entirely"
+  },
+  {
+    "id": "A09",
+    "type": "A",
+    "query": "How much of Refex Industries' balance sheet and off-balance-sheet commitments is...",
+    "gold_docs": [
+      "Refex Industries_Annual Report FY 202526.pdf"
+    ],
+    "ret_docs": [
+      "gsib-memo-change-summary.pdf",
+      "Refex Industries_Annual Report FY 202526.pdf"
+    ],
+    "doc_rec": 1.0,
+    "page_rec": 0.0,
+    "page_prec": 0.0,
+    "ret_chunks": 16,
+    "gold_chunks": 6,
+    "gold_pages_count": 6,
+    "cause": "MISSING_SECTIONS: Got right doc, but budget/router missed gold sections/pages"
+  },
+  {
+    "id": "C05",
+    "type": "C",
+    "query": "Our stress-testing team proposes reusing its nine-quarter supervisory scenarios ...",
+    "gold_docs": [
+      "FDIC Interagency CECL Statement.pdf",
+      "OCC ACL Handbook.pdf",
+      "ASU_2016-13.pdf",
+      "FDIC FAQ.pdf",
+      "Implementation Handbook.pdf"
+    ],
+    "ret_docs": [
+      "BCBS-Basel-Endgame.pdf",
+      "BCBS-CreditValuation.pdf",
+      "FDIC Interagency CECL Statement.pdf",
+      "BCBS-MarketRisk.pdf",
+      "BaselFramework.pdf"
+    ],
+    "doc_rec": 0.2,
+    "page_rec": 0.023255813953488372,
+    "page_prec": 0.03125,
+    "ret_chunks": 35,
+    "gold_chunks": 62,
+    "gold_pages_count": 43,
+    "cause": "PARTIAL_DOCUMENT: Multi-doc question missed one or more gold docs"
+  },
+  {
+    "id": "A24",
+    "type": "A",
+    "query": "Line up CEAT, Inox Wind, Refex, GRM Overseas and Metal Coatings on leverage, sho...",
+    "gold_docs": [
+      "CEATIntegratedAnnualReport2526Re.pdf",
+      "Metal Coatings_Annual Report FY 2026.pdf",
+      "GRM Overseas_Annual Report FY 2025.pdf",
+      "Refex Industries_Annual Report FY 202526.pdf",
+      "Inox Wind_Annual Report FY 2026.pdf"
+    ],
+    "ret_docs": [
+      "Metal Coatings_Annual Report FY 2025.pdf",
+      "CEATIntegratedAnnualReport2526Re.pdf",
+      "Metal Coatings_Annual Report FY 2026.pdf",
+      "GRM Overseas_Annual Report FY 2025.pdf",
+      "Refex Industries_Annual Report FY 202526.pdf",
+      "Inox Wind_Annual Report FY 2026.pdf"
+    ],
+    "doc_rec": 1.0,
+    "page_rec": 0.04672897196261682,
+    "page_prec": 0.16129032258064516,
+    "ret_chunks": 35,
+    "gold_chunks": 267,
+    "gold_pages_count": 107,
+    "cause": "MISSING_SECTIONS: Got right doc, but budget/router missed gold sections/pages"
+  },
+  {
+    "id": "C02",
+    "type": "C",
+    "query": "If our bank were building its first lifetime-loss allowance process from scratch...",
+    "gold_docs": [
+      "FDIC Interagency CECL Statement.pdf",
+      "OCC ACL Handbook.pdf",
+      "ASU_2016-13.pdf",
+      "FDIC FAQ.pdf",
+      "Implementation Handbook.pdf"
+    ],
+    "ret_docs": [
+      "91fr14908.pdf",
+      "FDIC Interagency CECL Statement.pdf",
+      "OCC ACL Handbook.pdf",
+      "FDIC FAQ.pdf",
+      "91fr14952.pdf"
+    ],
+    "doc_rec": 0.6,
+    "page_rec": 0.056,
+    "page_prec": 0.21212121212121213,
+    "ret_chunks": 35,
+    "gold_chunks": 187,
+    "gold_pages_count": 125,
+    "cause": "PARTIAL_DOCUMENT: Multi-doc question missed one or more gold docs"
+  },
+  {
+    "id": "C11",
+    "type": "C",
+    "query": "We are buying a portfolio of seasoned loans, many of which have deteriorated sin...",
+    "gold_docs": [
+      "FASB ASC 326 Update.pdf",
+      "FDIC Interagency CECL Statement.pdf",
+      "ASU_2016-13.pdf",
+      "OCC ACL Handbook.pdf",
+      "FDIC FAQ.pdf",
+      "Implementation Handbook.pdf"
+    ],
+    "ret_docs": [
+      "FASB ASC 326 Update.pdf",
+      "FDIC Interagency CECL Statement.pdf"
+    ],
+    "doc_rec": 0.3333333333333333,
+    "page_rec": 0.056338028169014086,
+    "page_prec": 0.2,
+    "ret_chunks": 35,
+    "gold_chunks": 89,
+    "gold_pages_count": 71,
+    "cause": "PARTIAL_DOCUMENT: Multi-doc question missed one or more gold docs"
+  },
+  {
+    "id": "B19",
+    "type": "B",
+    "query": "Many capital rules switch on at fixed dollar or euro thresholds. Which threshold...",
+    "gold_docs": [
+      "fact-sheet-SUMMARY.pdf",
+      "board-memo-basel-gsib-standardized-approach.pdf",
+      "91fr14908.pdf",
+      "BCBS-Basel-Endgame.pdf"
+    ],
+    "ret_docs": [
+      "BCBS-Basel-Endgame.pdf",
+      "board-memo-basel-gsib-standardized-approach.pdf",
+      "BCBS-CreditValuation.pdf",
+      "BCBS-MarketRisk.pdf",
+      "gsib-memo-change-summary.pdf",
+      "BaselFramework.pdf",
+      "Inox Wind_Annual Report FY 2026.pdf"
+    ],
+    "doc_rec": 0.5,
+    "page_rec": 0.05660377358490566,
+    "page_prec": 0.125,
+    "ret_chunks": 24,
+    "gold_chunks": 99,
+    "gold_pages_count": 53,
+    "cause": "PARTIAL_DOCUMENT: Multi-doc question missed one or more gold docs"
+  }
+]

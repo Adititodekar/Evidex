@@ -9,15 +9,15 @@ from typing import Dict, Any, List, Tuple
 logger = logging.getLogger(__name__)
 
 MIN_BUDGETS = {
-    "narrow": 10,
+    "narrow": 5,
     "medium": 15,
-    "broad": 22
+    "broad": 40
 }
 
 MAX_BUDGETS = {
-    "narrow": 18,
-    "medium": 26,
-    "broad": 40
+    "narrow": 30,
+    "medium": 80,
+    "broad": 220
 }
 
 def check_and_widen_coverage(

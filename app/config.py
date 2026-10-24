@@ -17,15 +17,15 @@ class Settings(BaseModel):
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "opencode" if os.getenv("OPENCODE_API_KEY") else "gemini")
     
     GEMINI_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
     
     OPENCODE_BASE_URL: str = os.getenv("OPENCODE_BASE_URL", "https://opencode.ai/inference/openai/v1/chat/completions")
     OPENCODE_MODEL: str = os.getenv("OPENCODE_MODEL", "deepseek-v4.1-flash")
     
     # Model Roles
-    ROUTER_MODEL: str = os.getenv("ROUTER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else "gemini-flash-lite-latest")
-    VERIFIER_MODEL: str = os.getenv("VERIFIER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else "gemini-flash-lite-latest")
-    ANSWER_MODEL: str = os.getenv("ANSWER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else "gemini-flash-lite-latest")
+    ROUTER_MODEL: str = os.getenv("ROUTER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"))
+    VERIFIER_MODEL: str = os.getenv("VERIFIER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"))
+    ANSWER_MODEL: str = os.getenv("ANSWER_MODEL", "deepseek-v4.1-flash" if os.getenv("LLM_PROVIDER") == "opencode" else os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"))
     
     # Langfuse Settings
     LANGFUSE_PUBLIC_KEY: str = os.getenv("LANGFUSE_PUBLIC_KEY", "")

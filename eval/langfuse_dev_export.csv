@@ -1,0 +1,5 @@
+Query ID,Latency (s),Cost (USD),Input Tokens,Output Tokens,Ret Chunks,Gold Chunks,Answer Precision,Answer Recall,Context Precision,Context Recall,Trace Link,Query
+A34,19.09,$0.00025,2510,8,3,1,0.00%,0.00%,0.00%,0.00%,https://cloud.langfuse.com/project/evidex-financial-rers/traces/42ca7a3d-cd60-400c-a3e9-e2e37e613291,What was Banque Saudi Fransi's NPL coverage ratio at the end of 2025?
+A35,15.65,$0.00021,1925,47,1,2,100.00%,66.67%,100.00%,50.00%,https://cloud.langfuse.com/project/evidex-financial-rers/traces/649e8a57-cbb4-45a9-a9fd-29b9b63e428e,Who chairs the Risk Management Committee of Infosys?
+B30,73.29,$0.00021,1924,54,1,3,50.00%,12.50%,100.00%,33.33%,https://cloud.langfuse.com/project/evidex-financial-rers/traces/163d46e5-8eb3-4003-80af-472616498d66,"Under the Basel Committee's original December 2017 timetable, what calibration d"
+B32,46.51,$0.00030,2707,86,3,0,0.00%,0.00%,0.00%,0.00%,https://cloud.langfuse.com/project/evidex-financial-rers/traces/f41099bc-5beb-43d5-bc86-9a5a66fd6a91,What individual stress capital buffer did the Fed assign to each US GSIB for the

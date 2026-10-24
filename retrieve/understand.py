@@ -129,6 +129,20 @@ def understand_query(query: str, doc_cards: List[Dict[str, Any]] = None) -> Dict
             "expected_doc_types": ["annual_report", "regulation"]
         })
 
+    # Extract sub-clauses from dashed or colon-separated lists
+    sub_parts = re.split(r'\s*[-–—:]\s*', clean_q)
+    if len(sub_parts) > 1:
+        for sub in sub_parts[1:]:
+            items = [it.strip() for it in re.split(r',|\band\b', sub) if len(it.strip()) > 3]
+            for it in items:
+                if it and it not in [f.get("need", "") for f in facets]:
+                    facets.append({
+                        "facet_id": f"f{len(facets)+1}",
+                        "need": it,
+                        "aspect": "numerical" if not is_comparison else "comparison",
+                        "expected_doc_types": ["annual_report"]
+                    })
+
     # 2. LLM-assisted enhancement (if available)
     try:
         client = LLMClient()
@@ -158,11 +172,14 @@ def understand_query(query: str, doc_cards: List[Dict[str, Any]] = None) -> Dict
     except Exception as e:
         logger.warning(f"LLM query understanding fallback to deterministic: {e}")
 
-    # If multiple entities found, mark as comparison
-    if len(found_entities) > 1 and not is_comparison:
-        if any(term in clean_q.lower() for term in ["line up", "rank", "list", "and", "between", "across"]):
-            is_comparison = True
-            breadth = "broad"
+    # If multiple entities or broad keywords found, mark as comparison & broad
+    is_broad_query = (
+        words_count > 25
+        or len(facets) >= 3
+        or any(term in clean_q.lower() for term in ["contrast", "compare", "every", "all specific", "identify every", "break down", "list all", "line up", "rank", "across"])
+    )
+    if is_broad_query:
+        breadth = "broad"
 
     return {
         "facets": facets,

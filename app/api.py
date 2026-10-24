@@ -14,6 +14,7 @@ from typing import List, Dict, Any
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, FileResponse
 
 from app.config import settings
 from app.schemas import IndexResponse, QueryRequest, QueryResponse, RetrievedChunk, TraceStep, UsageMetrics
@@ -47,6 +48,36 @@ app.add_middleware(
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "EVIDEX RERS"}
+
+@app.get("/", response_class=HTMLResponse)
+def index_page():
+    template_path = os.path.join(os.path.dirname(__file__), "templates", "index.html")
+    if os.path.exists(template_path):
+        with open(template_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>EVIDEX RERS API Ready</h1><p>Visit <a href='/docs'>/docs</a> for Swagger UI.</p>")
+
+@app.get("/api/langfuse/export")
+def get_langfuse_export():
+    json_path = os.path.join(os.path.dirname(__file__), "..", "eval", "langfuse_dev_export.json")
+    if os.path.exists(json_path):
+        return FileResponse(json_path, media_type="application/json")
+    raise HTTPException(status_code=404, detail="Langfuse dev export not generated yet.")
+
+@app.get("/api/langfuse/csv")
+def get_langfuse_csv():
+    csv_path = os.path.join(os.path.dirname(__file__), "..", "eval", "langfuse_dev_export.csv")
+    if os.path.exists(csv_path):
+        return FileResponse(csv_path, media_type="text/csv", filename="langfuse_dev_export.csv")
+    raise HTTPException(status_code=404, detail="Langfuse CSV export not generated yet.")
+
+@app.get("/api/langfuse/report")
+def get_langfuse_report():
+    md_path = os.path.join(os.path.dirname(__file__), "..", "eval", "LANGFUSE_DEV_TRACE_REPORT.md")
+    if os.path.exists(md_path):
+        with open(md_path, "r", encoding="utf-8") as f:
+            return {"report": f.read()}
+    raise HTTPException(status_code=404, detail="Langfuse report not generated yet.")
 
 @app.post("/index", response_model=IndexResponse)
 def index_documents(

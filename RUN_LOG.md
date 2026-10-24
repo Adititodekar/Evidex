@@ -12,4 +12,9 @@
 | 2026-10-24 05:04 | M7: Evaluation Framework | Integrated unmodified official evaluator `eval/official_eval.py` (SHA-256 verified), created `eval/splits.json` (70/30 stratified train/val split), `eval/run_eval.py`, `eval/diagnose.py`. | Zero-touch compliance on official evaluator; OpenCodeClient verified with Gemini endpoint. | PASSED |
 | 2026-10-24 05:05 | M8: Deployment & Documentation | Created `Dockerfile`, `requirements.txt`, `docs/WRITEUP.md` (3-page comprehensive technical report). | Production container ready; comprehensive architecture and trade-off writeup complete. | PASSED |
 
+| 2026-10-24 07:15 | Baseline Evaluation (70 Tune) | Full 70-question tune split proxy evaluation. Measured document recall, page recall, page precision, returned vs gold chunk count. | Overall Doc Rec: 66.59%, Doc Prec: 62.76%, Page Rec: 18.28%, Page Prec: 25.34%, Ret Chunks: 30.2 vs Gold Chunks: 92.5. Baseline 15-35 chunk budget identified as primary bottleneck. | COMPLETED |
+| 2026-10-24 09:20 | M6+ Observability: Langfuse Dev Set Traces | Built `eval/export_langfuse_traces.py` logging per-query cost (USD), latency (s), tokens, 9-step hierarchical traces, and official evaluator scores. Exported dev set evaluation to `eval/langfuse_dev_export.json`, `eval/langfuse_dev_export.csv`, and `eval/LANGFUSE_DEV_TRACE_REPORT.md`. | Dev Set batch evaluated: Avg Cost: $0.00024/query, Avg Latency: 38.6s, official evaluation scores recorded, Langfuse cloud trace links generated. | PASSED |
+| 2026-10-24 09:30 | Production Web Dashboard & Server Launch | Created responsive dark-mode Web Dashboard at `app/templates/index.html` (Query Copilot, Langfuse Dev Traces, and RERS Architecture tabs). Launched Uvicorn server on `http://127.0.0.1:8000`. | Browser subagent verified 100% UI rendering and zero console errors; `test_eval_untouched.py` PASSED (hash intact). | RUNNING |
+
 ---
+

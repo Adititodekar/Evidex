@@ -71,15 +71,46 @@ def run_evaluation(
     # Initialize Evaluator with resilient adapter for JSON array outputs
     class RobustJudgeClient(OpenCodeClient):
         def call_structured(self, system_prompt: str, user_prompt: str, max_tokens: int = 10000,
-                             temperature: float = 0, max_retries: int = 3) -> dict:
-            data = super().call_structured(system_prompt, user_prompt, max_tokens, temperature, max_retries)
-            if isinstance(data, list):
-                if "points" in user_prompt:
-                    return {"points": data}
-                elif "verdicts" in user_prompt:
-                    return {"verdicts": data}
-                return {"items": data}
-            return data
+                             temperature: float = 0, max_retries: int = 5) -> dict:
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            }
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "response_format": {"type": "json_object"},
+            }
+            last_error = None
+            for attempt in range(max_retries):
+                try:
+                    import requests
+                    resp = requests.post(self.base_url, headers=headers, json=payload, timeout=90)
+                    if resp.status_code == 429:
+                        sleep_time = 8.0 * (attempt + 1)
+                        print(f" [Rate-limit 429: backing off {sleep_time:.0f}s] ", end="", flush=True)
+                        time.sleep(sleep_time)
+                        continue
+                    resp.raise_for_status()
+                    data = resp.json()
+                    content = data["choices"][0]["message"]["content"]
+                    parsed = self._safe_json_parse(content)
+                    if isinstance(parsed, list):
+                        if "points" in user_prompt:
+                            return {"points": parsed}
+                        elif "verdicts" in user_prompt:
+                            return {"verdicts": parsed}
+                        return {"items": parsed}
+                    return parsed
+                except Exception as e:
+                    last_error = e
+                    time.sleep(3.0 * (attempt + 1))
+            raise RuntimeError(f"RobustJudgeClient call failed after {max_retries} attempts: {last_error}")
 
     api_key = settings.GEMINI_API_KEY or settings.OPENCODE_API_KEY
     judge_client = RobustJudgeClient(

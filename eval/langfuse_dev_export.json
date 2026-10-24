@@ -1,0 +1,695 @@
+{
+  "exporter": "Langfuse v5 EVIDEX Observability",
+  "host": "https://cloud.langfuse.com",
+  "export_time": "2026-10-24T03:52:46Z",
+  "total_queries": 4,
+  "total_cost_usd": 0.000965,
+  "avg_latency_s": 38.63,
+  "avg_answer_precision": 0.375,
+  "avg_answer_recall": 0.1979,
+  "avg_context_precision": 0.5,
+  "avg_context_recall": 0.2083,
+  "traces": [
+    {
+      "id": "42ca7a3d-cd60-400c-a3e9-e2e37e613291",
+      "timestamp": "2026-10-24T03:50:31Z",
+      "name": "evidex_query_A34",
+      "qid": "A34",
+      "query": "What was Banque Saudi Fransi's NPL coverage ratio at the end of 2025?",
+      "answer": "No information was retrieved for this question.",
+      "retrieved_chunks_count": 3,
+      "gold_chunks_count": 1,
+      "documents_cited": [
+        "BSF-2025 Integrated Annual Report.pdf"
+      ],
+      "trace_steps": [
+        {
+          "step_name": "query_understanding",
+          "description": "Decomposed question into facets, extracted entities, and resolved temporal scope",
+          "input": {
+            "query": "What was Banque Saudi Fransi's NPL coverage ratio at the end of 2025?"
+          },
+          "output": {
+            "facets_count": 1,
+            "entities": [
+              "Banque Saudi Fransi"
+            ],
+            "periods": [
+              "FY2025"
+            ],
+            "breadth": "narrow",
+            "is_comparison": false
+          }
+        },
+        {
+          "step_name": "metadata_filter",
+          "description": "Filtered documents by entity and period, resolving near-duplicate siblings",
+          "input": {
+            "entities": [
+              "Banque Saudi Fransi"
+            ],
+            "periods": [
+              "FY2025"
+            ]
+          },
+          "output": {
+            "surviving_documents": [
+              "BSF-2025 Integrated Annual Report.pdf"
+            ],
+            "logs": [
+              "Entity filter matched 1 documents for entities ['banque saudi fransi']."
+            ]
+          }
+        },
+        {
+          "step_name": "doc_router",
+          "description": "Navigated section cards per facet to shortlist high-relevance sections",
+          "input": {
+            "surviving_documents": 1
+          },
+          "output": {
+            "selected_sections_count": 4,
+            "documents_routed": [
+              "BSF-2025 Integrated Annual Report.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "recursive_drilldown",
+          "description": "Retrieved complete leaf sections and targeted multi-vector/BM25 candidates",
+          "input": {
+            "sections_count": 4
+          },
+          "output": {
+            "candidate_chunks_count": 207
+          }
+        },
+        {
+          "step_name": "coverage_check",
+          "description": "Verified evidence bounds per breadth setting with bounded adaptive widening",
+          "input": {
+            "candidates_in": 207
+          },
+          "output": {
+            "chunks_after_coverage": 30,
+            "logs": [
+              "Coverage check: 207 chunks retrieved (min threshold: 5, max cap: 30)."
+            ]
+          }
+        },
+        {
+          "step_name": "evidence_verification",
+          "description": "Ranked and verified evidence chunks matching judge relevance criteria",
+          "input": {
+            "chunks_in": 30
+          },
+          "output": {
+            "verified_chunks_count": 3,
+            "logs": [
+              "LLM verification: 0 / 30 judged relevant.",
+              "Final selected 3 verified chunks (cap: 12)."
+            ]
+          }
+        },
+        {
+          "step_name": "context_assembly",
+          "description": "Ordered verified chunks by document and page, formatting exact citations",
+          "input": {
+            "chunks_count": 3
+          },
+          "output": {
+            "formatted_context_length": 2915,
+            "documents_included": [
+              "BSF-2025 Integrated Annual Report.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "llm_answer_generation",
+          "description": "Synthesized verified evidence into an institutional answer with strict inline citations",
+          "input": {
+            "context_chunks": 3
+          },
+          "output": {
+            "answer_length": 47,
+            "cost_usd": 0.000253
+          }
+        },
+        {
+          "step_name": "claim_check",
+          "description": "Verified sentence-level claims against cited evidence chunks",
+          "input": {
+            "citations_found": 0
+          },
+          "output": {
+            "citations_valid": 0,
+            "is_valid": true
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 2510,
+        "output_tokens": 8,
+        "total_tokens": 2518,
+        "cost_usd": 0.000253,
+        "latency_s": 19.09,
+        "model": "gemini-3.1-flash-lite"
+      },
+      "scores": {
+        "answer_precision": 0.0,
+        "answer_recall": 0.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "trace_url": "https://cloud.langfuse.com/project/evidex-financial-rers/traces/42ca7a3d-cd60-400c-a3e9-e2e37e613291"
+    },
+    {
+      "id": "649e8a57-cbb4-45a9-a9fd-29b9b63e428e",
+      "timestamp": "2026-10-24T03:50:46Z",
+      "name": "evidex_query_A35",
+      "qid": "A35",
+      "query": "Who chairs the Risk Management Committee of Infosys?",
+      "answer": "1. D. Sundaram serves as the Chairperson of the Risk Management Committee of Infosys as of March 31, 2026. [infosys-ar-26.pdf p.108]",
+      "retrieved_chunks_count": 1,
+      "gold_chunks_count": 2,
+      "documents_cited": [
+        "infosys-ar-26.pdf"
+      ],
+      "trace_steps": [
+        {
+          "step_name": "query_understanding",
+          "description": "Decomposed question into facets, extracted entities, and resolved temporal scope",
+          "input": {
+            "query": "Who chairs the Risk Management Committee of Infosys?"
+          },
+          "output": {
+            "facets_count": 1,
+            "entities": [
+              "Basel Committee on Banking Supervision",
+              "infosys-ar-26",
+              "Infosys"
+            ],
+            "periods": [
+              "latest"
+            ],
+            "breadth": "narrow",
+            "is_comparison": false
+          }
+        },
+        {
+          "step_name": "metadata_filter",
+          "description": "Filtered documents by entity and period, resolving near-duplicate siblings",
+          "input": {
+            "entities": [
+              "Basel Committee on Banking Supervision",
+              "infosys-ar-26",
+              "Infosys"
+            ],
+            "periods": [
+              "latest"
+            ]
+          },
+          "output": {
+            "surviving_documents": [
+              "board-memo-basel-gsib-standardized-approach.pdf",
+              "infosys-ar-26.pdf",
+              "BCBS-CreditValuation.pdf"
+            ],
+            "logs": [
+              "Entity filter matched 6 documents for entities ['basel committee on banking supervision', 'infosys-ar-26', 'infosys'].",
+              "Sibling discrimination: picked 'board-memo-basel-gsib-standardized-approach.pdf' over siblings ['board-memo-basel-gsib-standardized-approach.pdf', 'BCBS-Basel-Endgame.pdf', 'BaselFramework.pdf'] via 'period'.",
+              "Sibling discrimination: picked 'BCBS-CreditValuation.pdf' over siblings ['BCBS-CreditValuation.pdf', 'BCBS-MarketRisk.pdf'] via 'period'."
+            ]
+          }
+        },
+        {
+          "step_name": "doc_router",
+          "description": "Navigated section cards per facet to shortlist high-relevance sections",
+          "input": {
+            "surviving_documents": 3
+          },
+          "output": {
+            "selected_sections_count": 13,
+            "documents_routed": [
+              "board-memo-basel-gsib-standardized-approach.pdf",
+              "infosys-ar-26.pdf",
+              "BCBS-CreditValuation.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "recursive_drilldown",
+          "description": "Retrieved complete leaf sections and targeted multi-vector/BM25 candidates",
+          "input": {
+            "sections_count": 13
+          },
+          "output": {
+            "candidate_chunks_count": 308
+          }
+        },
+        {
+          "step_name": "coverage_check",
+          "description": "Verified evidence bounds per breadth setting with bounded adaptive widening",
+          "input": {
+            "candidates_in": 308
+          },
+          "output": {
+            "chunks_after_coverage": 30,
+            "logs": [
+              "Coverage check: 308 chunks retrieved (min threshold: 5, max cap: 30)."
+            ]
+          }
+        },
+        {
+          "step_name": "evidence_verification",
+          "description": "Ranked and verified evidence chunks matching judge relevance criteria",
+          "input": {
+            "chunks_in": 30
+          },
+          "output": {
+            "verified_chunks_count": 1,
+            "logs": [
+              "LLM verification: 1 / 30 judged relevant.",
+              "Final selected 1 verified chunks (cap: 12)."
+            ]
+          }
+        },
+        {
+          "step_name": "context_assembly",
+          "description": "Ordered verified chunks by document and page, formatting exact citations",
+          "input": {
+            "chunks_count": 1
+          },
+          "output": {
+            "formatted_context_length": 1303,
+            "documents_included": [
+              "infosys-ar-26.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "llm_answer_generation",
+          "description": "Synthesized verified evidence into an institutional answer with strict inline citations",
+          "input": {
+            "context_chunks": 1
+          },
+          "output": {
+            "answer_length": 132,
+            "cost_usd": 0.000207
+          }
+        },
+        {
+          "step_name": "claim_check",
+          "description": "Verified sentence-level claims against cited evidence chunks",
+          "input": {
+            "citations_found": 1
+          },
+          "output": {
+            "citations_valid": 1,
+            "is_valid": true
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 1925,
+        "output_tokens": 47,
+        "total_tokens": 1972,
+        "cost_usd": 0.000207,
+        "latency_s": 15.65,
+        "model": "gemini-3.1-flash-lite"
+      },
+      "scores": {
+        "answer_precision": 1.0,
+        "answer_recall": 0.6667,
+        "context_precision": 1.0,
+        "context_recall": 0.5
+      },
+      "trace_url": "https://cloud.langfuse.com/project/evidex-financial-rers/traces/649e8a57-cbb4-45a9-a9fd-29b9b63e428e"
+    },
+    {
+      "id": "163d46e5-8eb3-4003-80af-472616498d66",
+      "timestamp": "2026-10-24T03:52:00Z",
+      "name": "evidex_query_B30",
+      "qid": "B30",
+      "query": "Under the Basel Committee's original December 2017 timetable, what calibration did the output floor have from 1 January 2025?",
+      "answer": "1. Under the Basel Committee's original December 2017 timetable, the output floor calibration effective from 1 January 2025 is set at 65%. [BCBS-Basel-Endgame.pdf p.143]",
+      "retrieved_chunks_count": 1,
+      "gold_chunks_count": 3,
+      "documents_cited": [
+        "BCBS-Basel-Endgame.pdf"
+      ],
+      "trace_steps": [
+        {
+          "step_name": "query_understanding",
+          "description": "Decomposed question into facets, extracted entities, and resolved temporal scope",
+          "input": {
+            "query": "Under the Basel Committee's original December 2017 timetable, what calibration did the output floor have from 1 January 2025?"
+          },
+          "output": {
+            "facets_count": 1,
+            "entities": [
+              "Basel Committee on Banking Supervision",
+              "board-memo-basel-gsib-standardized-approach"
+            ],
+            "periods": [
+              "FY2017",
+              "FY2025",
+              "2025-01-01"
+            ],
+            "breadth": "narrow",
+            "is_comparison": false
+          }
+        },
+        {
+          "step_name": "metadata_filter",
+          "description": "Filtered documents by entity and period, resolving near-duplicate siblings",
+          "input": {
+            "entities": [
+              "Basel Committee on Banking Supervision",
+              "board-memo-basel-gsib-standardized-approach"
+            ],
+            "periods": [
+              "FY2017",
+              "FY2025",
+              "2025-01-01"
+            ]
+          },
+          "output": {
+            "surviving_documents": [
+              "gsib-memo-change-summary.pdf",
+              "BCBS-CreditValuation.pdf",
+              "BCBS-Basel-Endgame.pdf"
+            ],
+            "logs": [
+              "Entity filter matched 6 documents for entities ['basel committee on banking supervision', 'board-memo-basel-gsib-standardized-approach'].",
+              "Sibling discrimination: picked 'BCBS-Basel-Endgame.pdf' over siblings ['BCBS-Basel-Endgame.pdf', 'BaselFramework.pdf', 'board-memo-basel-gsib-standardized-approach.pdf'] via 'period'.",
+              "Sibling discrimination: picked 'BCBS-CreditValuation.pdf' over siblings ['BCBS-CreditValuation.pdf', 'BCBS-MarketRisk.pdf'] via 'period'."
+            ]
+          }
+        },
+        {
+          "step_name": "doc_router",
+          "description": "Navigated section cards per facet to shortlist high-relevance sections",
+          "input": {
+            "surviving_documents": 3
+          },
+          "output": {
+            "selected_sections_count": 16,
+            "documents_routed": [
+              "gsib-memo-change-summary.pdf",
+              "BCBS-CreditValuation.pdf",
+              "BCBS-Basel-Endgame.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "recursive_drilldown",
+          "description": "Retrieved complete leaf sections and targeted multi-vector/BM25 candidates",
+          "input": {
+            "sections_count": 16
+          },
+          "output": {
+            "candidate_chunks_count": 163
+          }
+        },
+        {
+          "step_name": "coverage_check",
+          "description": "Verified evidence bounds per breadth setting with bounded adaptive widening",
+          "input": {
+            "candidates_in": 163
+          },
+          "output": {
+            "chunks_after_coverage": 30,
+            "logs": [
+              "Coverage check: 163 chunks retrieved (min threshold: 5, max cap: 30)."
+            ]
+          }
+        },
+        {
+          "step_name": "evidence_verification",
+          "description": "Ranked and verified evidence chunks matching judge relevance criteria",
+          "input": {
+            "chunks_in": 30
+          },
+          "output": {
+            "verified_chunks_count": 1,
+            "logs": [
+              "LLM verification: 1 / 30 judged relevant.",
+              "Final selected 1 verified chunks (cap: 12)."
+            ]
+          }
+        },
+        {
+          "step_name": "context_assembly",
+          "description": "Ordered verified chunks by document and page, formatting exact citations",
+          "input": {
+            "chunks_count": 1
+          },
+          "output": {
+            "formatted_context_length": 845,
+            "documents_included": [
+              "BCBS-Basel-Endgame.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "llm_answer_generation",
+          "description": "Synthesized verified evidence into an institutional answer with strict inline citations",
+          "input": {
+            "context_chunks": 1
+          },
+          "output": {
+            "answer_length": 169,
+            "cost_usd": 0.000209
+          }
+        },
+        {
+          "step_name": "claim_check",
+          "description": "Verified sentence-level claims against cited evidence chunks",
+          "input": {
+            "citations_found": 1
+          },
+          "output": {
+            "citations_valid": 1,
+            "is_valid": true
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 1924,
+        "output_tokens": 54,
+        "total_tokens": 1978,
+        "cost_usd": 0.000209,
+        "latency_s": 73.29,
+        "model": "gemini-3.1-flash-lite"
+      },
+      "scores": {
+        "answer_precision": 0.5,
+        "answer_recall": 0.125,
+        "context_precision": 1.0,
+        "context_recall": 0.3333
+      },
+      "trace_url": "https://cloud.langfuse.com/project/evidex-financial-rers/traces/163d46e5-8eb3-4003-80af-472616498d66"
+    },
+    {
+      "id": "f41099bc-5beb-43d5-bc86-9a5a66fd6a91",
+      "timestamp": "2026-10-24T03:52:46Z",
+      "name": "evidex_query_B32",
+      "qid": "B32",
+      "query": "What individual stress capital buffer did the Fed assign to each US GSIB for the 2025-26 cycle, according to these capital proposals?",
+      "answer": "No information was retrieved for this question. The provided document excerpts discuss the cumulative impact of proposed revisions on capital requirements and stress capital buffer methodologies, but they do not list individual stress capital buffer assignments for specific U.S. GSIBs for the 2025-26 cycle. [91fr14952.pdf p.149, 152, 177]",
+      "retrieved_chunks_count": 3,
+      "gold_chunks_count": 0,
+      "documents_cited": [
+        "91fr14952.pdf"
+      ],
+      "trace_steps": [
+        {
+          "step_name": "query_understanding",
+          "description": "Decomposed question into facets, extracted entities, and resolved temporal scope",
+          "input": {
+            "query": "What individual stress capital buffer did the Fed assign to each US GSIB for the 2025-26 cycle, according to these capital proposals?"
+          },
+          "output": {
+            "facets_count": 1,
+            "entities": [
+              "Integrated Annual Report 2025-26 Gammon India Limited",
+              "board-memo-basel-gsib-standardized-approach",
+              "gsib-memo-change-summary",
+              "JPMorgan Chase",
+              "Bank of America",
+              "Citigroup",
+              "Wells Fargo",
+              "Goldman Sachs",
+              "Morgan Stanley",
+              "BNY Mellon",
+              "State Street",
+              "Federal Reserve"
+            ],
+            "periods": [
+              "FY2025",
+              "2025-2026"
+            ],
+            "breadth": "narrow",
+            "is_comparison": true
+          }
+        },
+        {
+          "step_name": "metadata_filter",
+          "description": "Filtered documents by entity and period, resolving near-duplicate siblings",
+          "input": {
+            "entities": [
+              "Integrated Annual Report 2025-26 Gammon India Limited",
+              "board-memo-basel-gsib-standardized-approach",
+              "gsib-memo-change-summary",
+              "JPMorgan Chase",
+              "Bank of America",
+              "Citigroup",
+              "Wells Fargo",
+              "Goldman Sachs",
+              "Morgan Stanley",
+              "BNY Mellon",
+              "State Street",
+              "Federal Reserve"
+            ],
+            "periods": [
+              "FY2025",
+              "2025-2026"
+            ]
+          },
+          "output": {
+            "surviving_documents": [
+              "BaselFramework.pdf",
+              "FDIC Interagency CECL Statement.pdf",
+              "fact-sheet-SUMMARY.pdf",
+              "board-memo-basel-gsib-standardized-approach.pdf",
+              "91fr14908.pdf",
+              "BCBS-Basel-Endgame.pdf",
+              "BCBS-CreditValuation.pdf",
+              "gsib-memo-change-summary.pdf",
+              "91fr14952.pdf",
+              "Integrated Annual Report 2025-26 Gammon India Limited.pdf",
+              "BCBS-MarketRisk.pdf"
+            ],
+            "logs": [
+              "Entity filter matched 11 documents for entities ['integrated annual report 2025-26 gammon india limited', 'board-memo-basel-gsib-standardized-approach', 'gsib-memo-change-summary', 'jpmorgan chase', 'bank of america', 'citigroup', 'wells fargo', 'goldman sachs', 'morgan stanley', 'bny mellon', 'state street', 'federal reserve'].",
+              "Comparison query: retained sibling cluster ['91fr14908.pdf', '91fr14952.pdf', 'BCBS-Basel-Endgame.pdf', 'BaselFramework.pdf', 'board-memo-basel-gsib-standardized-approach.pdf'].",
+              "Comparison query: retained sibling cluster ['BCBS-CreditValuation.pdf', 'BCBS-MarketRisk.pdf'].",
+              "Comparison query: retained sibling cluster ['FDIC Interagency CECL Statement.pdf']."
+            ]
+          }
+        },
+        {
+          "step_name": "doc_router",
+          "description": "Navigated section cards per facet to shortlist high-relevance sections",
+          "input": {
+            "surviving_documents": 11
+          },
+          "output": {
+            "selected_sections_count": 45,
+            "documents_routed": [
+              "BaselFramework.pdf",
+              "FDIC Interagency CECL Statement.pdf",
+              "fact-sheet-SUMMARY.pdf",
+              "board-memo-basel-gsib-standardized-approach.pdf",
+              "91fr14908.pdf",
+              "BCBS-Basel-Endgame.pdf",
+              "BCBS-CreditValuation.pdf",
+              "gsib-memo-change-summary.pdf",
+              "91fr14952.pdf",
+              "Integrated Annual Report 2025-26 Gammon India Limited.pdf",
+              "BCBS-MarketRisk.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "recursive_drilldown",
+          "description": "Retrieved complete leaf sections and targeted multi-vector/BM25 candidates",
+          "input": {
+            "sections_count": 45
+          },
+          "output": {
+            "candidate_chunks_count": 1612
+          }
+        },
+        {
+          "step_name": "coverage_check",
+          "description": "Verified evidence bounds per breadth setting with bounded adaptive widening",
+          "input": {
+            "candidates_in": 1612
+          },
+          "output": {
+            "chunks_after_coverage": 30,
+            "logs": [
+              "Coverage check: 1612 chunks retrieved (min threshold: 5, max cap: 30)."
+            ]
+          }
+        },
+        {
+          "step_name": "evidence_verification",
+          "description": "Ranked and verified evidence chunks matching judge relevance criteria",
+          "input": {
+            "chunks_in": 30
+          },
+          "output": {
+            "verified_chunks_count": 3,
+            "logs": [
+              "LLM verification: 0 / 30 judged relevant.",
+              "Final selected 3 verified chunks (cap: 12)."
+            ]
+          }
+        },
+        {
+          "step_name": "context_assembly",
+          "description": "Ordered verified chunks by document and page, formatting exact citations",
+          "input": {
+            "chunks_count": 3
+          },
+          "output": {
+            "formatted_context_length": 4182,
+            "documents_included": [
+              "91fr14952.pdf"
+            ]
+          }
+        },
+        {
+          "step_name": "llm_answer_generation",
+          "description": "Synthesized verified evidence into an institutional answer with strict inline citations",
+          "input": {
+            "context_chunks": 3
+          },
+          "output": {
+            "answer_length": 340,
+            "cost_usd": 0.000296
+          }
+        },
+        {
+          "step_name": "claim_check",
+          "description": "Verified sentence-level claims against cited evidence chunks",
+          "input": {
+            "citations_found": 0
+          },
+          "output": {
+            "citations_valid": 0,
+            "is_valid": true
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 2707,
+        "output_tokens": 86,
+        "total_tokens": 2793,
+        "cost_usd": 0.000296,
+        "latency_s": 46.51,
+        "model": "gemini-3.1-flash-lite"
+      },
+      "scores": {
+        "answer_precision": 0.0,
+        "answer_recall": 0.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "trace_url": "https://cloud.langfuse.com/project/evidex-financial-rers/traces/f41099bc-5beb-43d5-bc86-9a5a66fd6a91"
+    }
+  ]
+}

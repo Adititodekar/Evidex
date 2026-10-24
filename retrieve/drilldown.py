@@ -28,14 +28,14 @@ def drilldown_evidence_set(
                 search_queries.append(need)
 
     # Determine top-k per facet based on breadth
-    top_k_per_facet = 15 if breadth == "broad" else (8 if breadth == "medium" else 5)
+    top_k_per_facet = 65 if breadth == "broad" else (30 if breadth == "medium" else 15)
     
     # 2. Targeted Multi-Facet BM25 & Vector Retrieval (with balanced multi-doc allocation)
     facet_hit_ids = set()
     for q_text in search_queries:
         if len(surviving_docs) > 1 and len(surviving_docs) <= 8:
             # Multi-document comparison: ensure proportional representation across every entity
-            per_doc_k = max(4, (top_k_per_facet // len(surviving_docs)) + 2)
+            per_doc_k = max(10, (top_k_per_facet // len(surviving_docs)) + 4)
             for s_doc in surviving_docs:
                 v_hits = collection_index.search_vectors(q_text, top_k=per_doc_k, filter_docs=[s_doc])
                 b_hits = collection_index.search_bm25(q_text, top_k=per_doc_k, filter_docs=[s_doc])
@@ -57,35 +57,31 @@ def drilldown_evidence_set(
         for c in retrieved:
             candidate_chunks_map[c["chunk_id"]] = c
 
-    # 3. Contiguous Window Expansion (+/- 1 page) for Top Hit Pages
-    hit_pages_by_doc: Dict[str, list] = {}
-    for c in candidate_chunks_map.values():
-        doc = c.get("document", c.get("doc_id", ""))
-        p = c.get("page", 0)
-        if doc not in hit_pages_by_doc:
-            hit_pages_by_doc[doc] = []
-        if p not in hit_pages_by_doc[doc]:
-            hit_pages_by_doc[doc].append(p)
-
-    for doc_id, pages in hit_pages_by_doc.items():
-        # Focus on top 6 hit pages per document to avoid flooding the pool
-        for p in pages[:6]:
-            for ep in (max(1, p - 1), p + 1):
-                extra = collection_index.get_chunks_for_section(doc_id, ep, ep)
-                for ec in extra:
-                    candidate_chunks_map[ec["chunk_id"]] = ec
-
-    # 4. Leaf Section Retrieval for concise sections
+    # 3. Whole Leaf Section Retrieval for all routed sections
     for doc_id, sections in selected_sections_by_doc.items():
-        for sec in sections[:2]:
-            start_p = sec["start_page"]
-            end_p = sec["end_page"]
-            if (end_p - start_p) <= 8:
+        for sec in sections:
+            start_p = sec.get("start_page", 1)
+            end_p = sec.get("end_page", start_p)
+            span = end_p - start_p
+            if span <= 30:
                 sec_chunks = collection_index.get_chunks_for_section(doc_id, start_p, end_p)
                 for c in sec_chunks:
                     candidate_chunks_map[c["chunk_id"]] = c
+            else:
+                # For large chapters, retrieve first 25 pages (reports/audits) + distributed coverage
+                sec_chunks = collection_index.get_chunks_for_section(doc_id, start_p, start_p + 25)
+                for c in sec_chunks:
+                    candidate_chunks_map[c["chunk_id"]] = c
+                if breadth == "broad":
+                    mid_p = (start_p + end_p) // 2
+                    mid_chunks = collection_index.get_chunks_for_section(doc_id, max(start_p, mid_p - 10), min(end_p, mid_p + 10))
+                    for c in mid_chunks:
+                        candidate_chunks_map[c["chunk_id"]] = c
+                    end_chunks = collection_index.get_chunks_for_section(doc_id, max(start_p, end_p - 15), end_p)
+                    for c in end_chunks:
+                        candidate_chunks_map[c["chunk_id"]] = c
 
-    # 5. Score all candidates against query and sort descending
+    # 4. Score all candidates against query and sort descending
     candidates = list(candidate_chunks_map.values())
     scored = []
     for c in candidates:

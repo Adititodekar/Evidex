@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVIDEX | Routed Evidence-Set Retrieval (RERS)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --border-color: rgba(75, 85, 99, 0.4);
+      --border-focus: #3b82f6;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.10) 0px, transparent 50%);
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.85rem 2rem;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #fff;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      background: rgba(31, 41, 55, 0.6);
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    .badge-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .badge-link:hover {
+      color: #fff;
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-tab {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-tab:hover {
+      color: var(--text-main);
+    }
+
+    .nav-tab.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* Main Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Query Control Section */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.45;
+    }
+
+    .sample-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .chip-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid rgba(75, 85, 99, 0.35);
+      border-radius: 6px;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.775rem;
+      color: #d1d5db;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.35;
+    }
+
+    .chip-btn:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    .chip-tag {
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-right: 0.3rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.925rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Output Section */
+    .output-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .answer-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .answer-text {
+      white-space: pre-wrap;
+      font-size: 0.925rem;
+      line-height: 1.65;
+      color: #e5e7eb;
+    }
+
+    .answer-text h2, .answer-text h3 {
+      color: #60a5fa;
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .citation-tag {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    /* Chunks & Trace Panels */
+    .collapsible {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 0.65rem;
+      overflow: hidden;
+      background: var(--bg-secondary);
+    }
+
+    .collapsible-header {
+      padding: 0.65rem 1rem;
+      background: rgba(31, 41, 55, 0.5);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.825rem;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .collapsible-header:hover {
+      background: rgba(55, 65, 81, 0.5);
+    }
+
+    .collapsible-body {
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: #d1d5db;
+      border-top: 1px solid var(--border-color);
+      background: rgba(17, 24, 39, 0.4);
+      display: none;
+      line-height: 1.55;
+    }
+
+    .collapsible-body.show {
+      display: block;
+    }
+
+    /* Trace Steps */
+    .trace-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(75, 85, 99, 0.25);
+    }
+
+    .trace-step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid var(--accent-blue);
+      color: #93c5fd;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .trace-content {
+      flex: 1;
+    }
+
+    .trace-name {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .trace-desc {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .trace-json {
+      background: #030712;
+      border-radius: 6px;
+      padding: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #a5f3fc;
+      margin-top: 0.4rem;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    /* Observability Tab Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.825rem;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(31, 41, 55, 0.8);
+      padding: 0.65rem 0.85rem;
+      color: #9ca3af;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid rgba(75, 85, 99, 0.25);
+      color: #e5e7eb;
+    }
+
+    tr:hover td {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">E</div>
+        <div>
+          <div class="brand-title">EVIDEX RERS</div>
+          <div class="brand-subtitle">Routed Evidence-Set Retrieval Engine</div>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge"><span class="badge-status"></span> System Ready</span>
+        <span class="badge">Model: gemini-3.1-flash-lite</span>
+        <span class="badge">Langfuse v5 Trace Ready</span>
+        <a href="/docs" target="_blank" class="badge badge-link">Swagger API &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- View Switcher Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('copilot')">Query Copilot</button>
+      <button class="nav-tab" onclick="switchTab('observability')">Langfuse Dev Traces & Metrics</button>
+      <button class="nav-tab" onclick="switchTab('architecture')">RERS 9-Step Architecture</button>
+    </div>
+
+    <!-- VIEW 1: Query Copilot -->
+    <div id="view-copilot" class="dashboard-grid">
+      <!-- Left: Query Controls -->
+      <div class="card">
+        <div class="card-title">
+          <span>Query Configuration</span>
+          <span style="font-size: 0.75rem; color: var(--accent-cyan);">POST /query</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="col-select">Collection</label>
+          <select id="col-select" class="form-select">
+            <option value="train" selected>train (35 Filings & Handbooks)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pre-calibrated Benchmark Questions</label>
+          <div class="sample-chips">
+            <button class="chip-btn" onclick="selectSample(0)">
+              <span class="chip-tag">[A01 Credit Risk]</span> Gammon India debt defaults, recalled borrowings, and statutory audit red flags
+            </button>
+            <button class="chip-btn" onclick="selectSample(1)">
+              <span class="chip-tag">[A04 Debt Rec]</span> Inox Wind net-cash and interest-bearing debt facility reconciliation
+            </button>
+            <button class="chip-btn" onclick="selectSample(2)">
+              <span class="chip-tag">[A26 Contagion]</span> Compare Refex, Inox Wind, Metal Coatings & GRM group exposure
+            </button>
+            <button class="chip-btn" onclick="selectSample(3)">
+              <span class="chip-tag">[A30 Liquidity]</span> Compare Banque Saudi Fransi & Aldar funding risk and buffers
+            </button>
+            <button class="chip-btn" onclick="selectSample(4)">
+              <span class="chip-tag">[B32 Abstention]</span> Federal Reserve US GSIB stress capital buffer assignment
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="query-input">Query</label>
+          <textarea id="query-input" class="form-textarea" placeholder="Enter institutional research question..."></textarea>
+        </div>
+
+        <button id="btn-run" class="btn-submit" onclick="runQuery()">
+          <span id="btn-text">Execute RERS Query</span>
+          <div id="btn-spinner" class="spinner hidden"></div>
+        </button>
+      </div>
+
+      <!-- Right: Answer & Audit Results -->
+      <div class="output-container">
+        <!-- Live Metrics Bar -->
+        <div class="metrics-bar">
+          <div class="metric-card">
+            <div id="m-latency" class="metric-val">--</div>
+            <div class="metric-lbl">Total Latency</div>
+          </div>
+          <div class="metric-card">
+            <div id="m-cost" class="metric-val" style="color: var(--accent-emerald);">--</div>
+            <div class="metric-lbl">Cost (USD)</div>
+          </div>
+          <div class="metric-card">
+            <div id="m-chunks" class="metric-val" style="color: var(--accent-cyan);">--</div>
+            <div class="metric-lbl">Retrieved Chunks</div>
+          </div>
+          <div class="metric-card">
+            <div id="m-tokens" class="metric-val" style="color: var(--accent-purple);">--</div>
+            <div class="metric-lbl">Total Tokens</div>
+          </div>
+        </div>
+
+        <!-- Answer Panel -->
+        <div class="answer-box">
+          <div class="card-title">
+            <span>Institutional Synthesized Answer</span>
+            <span id="m-claims" style="font-size: 0.75rem; color: var(--accent-emerald);"></span>
+          </div>
+          <div id="answer-content" class="answer-text">
+            Select a sample query or type a question and click <strong>Execute RERS Query</strong> to test the live hierarchical retrieval pipeline.
+          </div>
+        </div>
+
+        <!-- Retrieved Chunks Explorer -->
+        <div class="card">
+          <div class="card-title">
+            <span>Retrieved Evidence Chunks (<span id="chunk-count">0</span>)</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Strict Page Boundaries Preserved</span>
+          </div>
+          <div id="chunks-list">
+            <p style="color: var(--text-dim); font-size: 0.85rem;">No chunks retrieved yet.</p>
+          </div>
+        </div>
+
+        <!-- 9-Step Audit Trace -->
+        <div class="card">
+          <div class="card-title">
+            <span>9-Step RERS Execution Audit Trace</span>
+            <span style="font-size: 0.75rem; color: var(--accent-blue);">Langfuse Compatible</span>
+          </div>
+          <div id="trace-list">
+            <p style="color: var(--text-dim); font-size: 0.85rem;">Trace steps will populate upon execution.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: Observability & Langfuse -->
+    <div id="view-observability" class="card hidden">
+      <div class="card-title">
+        <div>
+          <span style="font-size: 1.15rem; font-weight: 700;">Dev Set Observability, Cost & Latency Traces</span>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-top: 0.2rem;">
+            Generated from official benchmark evaluation on validation questions.
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/api/langfuse/export" download="langfuse_dev_export.json" class="badge badge-link">&#128190; Download JSON Export</a>
+          <a href="/api/langfuse/csv" download="langfuse_dev_export.csv" class="badge badge-link">&#128196; Download CSV Export</a>
+        </div>
+      </div>
+
+      <div class="metrics-bar" style="margin: 1.25rem 0;">
+        <div class="metric-card">
+          <div class="metric-val" id="obs-avg-latency">--</div>
+          <div class="metric-lbl">Avg Latency</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="obs-avg-cost" style="color: var(--accent-emerald);">--</div>
+          <div class="metric-lbl">Avg Cost / Query</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="obs-avg-ans-p" style="color: var(--accent-cyan);">--</div>
+          <div class="metric-lbl">Avg Ans Precision</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="obs-avg-ctx-p" style="color: var(--accent-purple);">--</div>
+          <div class="metric-lbl">Avg Context Precision</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Query ID</th>
+              <th>Latency</th>
+              <th>Cost (USD)</th>
+              <th>Tokens</th>
+              <th>Chunks (Ret/Gold)</th>
+              <th>Ans Prec</th>
+              <th>Ans Rec</th>
+              <th>Ctx Prec</th>
+              <th>Ctx Rec</th>
+              <th>Trace Link</th>
+            </tr>
+          </thead>
+          <tbody id="obs-table-body">
+            <tr><td colspan="10" style="text-align: center; color: var(--text-dim);">Loading trace data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 3: Architecture Diagram -->
+    <div id="view-architecture" class="card hidden">
+      <div class="card-title">
+        <span style="font-size: 1.15rem; font-weight: 700;">RERS: Routed Evidence-Set Retrieval Architecture</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        EVIDEX replaces one-shot vector top-k retrieval with a hierarchical, deterministic routing architecture designed specifically to eliminate temporal cross-contamination and the chunk-size dilemma in financial analysis.
+      </p>
+
+      <div style="background: #030712; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #93c5fd; line-height: 1.6; overflow-x: auto;">
+[ Ingestion: POST /index ]<br>
+PDF Documents (Zip Archive)<br>
+&nbsp;&nbsp;&nbsp;├── 1. Page-Aligned Extraction (1-based index, table markdown formatting)<br>
+&nbsp;&nbsp;&nbsp;├── 2. Scanned OCR Fallback (RapidOCR / ONNX Runtime disk cache)<br>
+&nbsp;&nbsp;&nbsp;├── 3. Section Tree Parser (TOC bookmarks + structural heading regex)<br>
+&nbsp;&nbsp;&nbsp;├── 4. Paragraph-Aware Chunker (60–250 words, strict page boundary invariant)<br>
+&nbsp;&nbsp;&nbsp;├── 5. Dynamic Metadata Layer (Doc Cards, Sibling Discrimination Table)<br>
+&nbsp;&nbsp;&nbsp;└── 6. Multi-Vector (FAISS FlatIP) & BM25Okapi Indices in data/&lt;collection&gt;/<br>
+<br>
+[ Inference: POST /query ]<br>
+User Query<br>
+&nbsp;&nbsp;&nbsp;├── Step 1: query_understanding (Facet decomposition, temporal resolution, breadth budget)<br>
+&nbsp;&nbsp;&nbsp;├── Step 2: metadata_filter (Hard filter on Doc Cards + Sibling Discrimination)<br>
+&nbsp;&nbsp;&nbsp;├── Step 3: doc_router (LLM navigates compact section summaries per facet)<br>
+&nbsp;&nbsp;&nbsp;├── Step 4: recursive_drilldown (Leaf-section whole selection guarantees complete recall)<br>
+&nbsp;&nbsp;&nbsp;├── Step 5: coverage_check (Deterministic evidence bounds & adaptive widening)<br>
+&nbsp;&nbsp;&nbsp;├── Step 6: evidence_verification (Strict relevance classification, budget-capped)<br>
+&nbsp;&nbsp;&nbsp;├── Step 7: context_assembly (Ordered by Doc/Page, [Doc p.X] tags)<br>
+&nbsp;&nbsp;&nbsp;├── Step 8: llm_answer_generation (Executive bottom-line, structured sections, comparison tables)<br>
+&nbsp;&nbsp;&nbsp;└── Step 9: claim_check (Sentence-level fact verification against cited chunks)<br>
+&nbsp;&nbsp;&nbsp;└── Output Contract: {answer, chunks, trace, usage} + Langfuse Observability
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SAMPLES = [
+      "What credit, liquidity, or going-concern concerns exist regarding Gammon India? Cite statutory audit defaults, lender exposures, and default amounts from its annual report.",
+      "Reconcile Inox Wind's net-cash and interest-bearing debt position. What are the specific borrowing facilities, interest rates, and consolidated totals reported?",
+      "Compare how exposed Refex, Inox Wind, Metal Coatings and GRM Overseas are to related parties - loans, guarantees, sales and receivables. Who carries the biggest group-contagion risk relative to its size?",
+      "Compare how Banque Saudi Fransi and Aldar fund themselves and manage liquidity risk. Which is more exposed to a funding-market shock, and what buffers does each hold?",
+      "What individual stress capital buffer did the Fed assign to each US GSIB for the 2025-26 cycle, according to these capital proposals?"
+    ];
+
+    function selectSample(idx) {
+      document.getElementById('query-input').value = SAMPLES[idx];
+    }
+
+    // Set first sample on load
+    selectSample(0);
+
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('view-copilot').classList.add('hidden');
+      document.getElementById('view-observability').classList.add('hidden');
+      document.getElementById('view-architecture').classList.add('hidden');
+
+      if (tab === 'copilot') {
+        document.querySelector('.nav-tab:nth-child(1)').classList.add('active');
+        document.getElementById('view-copilot').classList.remove('hidden');
+      } else if (tab === 'observability') {
+        document.querySelector('.nav-tab:nth-child(2)').classList.add('active');
+        document.getElementById('view-observability').classList.remove('hidden');
+        loadObservabilityData();
+      } else if (tab === 'architecture') {
+        document.querySelector('.nav-tab:nth-child(3)').classList.add('active');
+        document.getElementById('view-architecture').classList.remove('hidden');
+      }
+    }
+
+    async function runQuery() {
+      const query = document.getElementById('query-input').value.trim();
+      const col = document.getElementById('col-select').value;
+      if (!query) return;
+
+      const btn = document.getElementById('btn-run');
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('btn-spinner');
+      const answerContent = document.getElementById('answer-content');
+
+      btn.disabled = true;
+      btnText.innerText = "Routing & Synthesizing...";
+      spinner.classList.remove('hidden');
+      answerContent.innerHTML = `<span style="color: var(--accent-cyan);">Executing 9-step hierarchical retrieval across ${col}... please wait.</span>`;
+
+      try {
+        const resp = await fetch('/query', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({collection_name: col, query: query})
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json();
+          throw new Error(err.detail || "Query failed");
+        }
+
+        const data = await resp.json();
+
+        // Update metrics
+        document.getElementById('m-latency').innerText = data.usage.latency_s.toFixed(1) + 's';
+        document.getElementById('m-cost').innerText = '$' + data.usage.total_cost_usd.toFixed(5);
+        document.getElementById('m-chunks').innerText = data.chunks.length;
+        document.getElementById('m-tokens').innerText = (data.usage.total_input_tokens + data.usage.total_output_tokens).toLocaleString();
+
+        // Format Answer
+        let formatted = data.answer.replace(/\[([^\]]+ p\.\d+)\]/g, '<span class="citation-tag">[$1]</span>');
+        answerContent.innerHTML = formatted;
+
+        // Render Chunks
+        renderChunks(data.chunks);
+
+        // Render Trace
+        renderTrace(data.trace);
+
+      } catch (e) {
+        answerContent.innerHTML = `<span style="color: var(--accent-rose);">Error: ${e.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btnText.innerText = "Execute RERS Query";
+        spinner.classList.add('hidden');
+      }
+    }
+
+    function renderChunks(chunks) {
+      document.getElementById('chunk-count').innerText = chunks.length;
+      const container = document.getElementById('chunks-list');
+      if (!chunks || chunks.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No chunks retrieved.</p>';
+        return;
+      }
+
+      let html = '';
+      chunks.forEach((c, i) => {
+        html += `
+          <div class="collapsible">
+            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+              <span>
+                <strong style="color: var(--accent-cyan);">${c.document}</strong> 
+                <span class="citation-tag">p.${c.page}</span> 
+                ${c.section ? '&bull; <span style="color: var(--text-muted);">' + c.section.substring(0, 45) + '...</span>' : ''}
+              </span>
+              <span style="font-size: 0.725rem; color: var(--text-dim);">${c.word_count || ''} words &#9660;</span>
+            </div>
+            <div class="collapsible-body">
+              <p style="white-space: pre-wrap;">${escapeHtml(c.text)}</p>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderTrace(trace) {
+      const container = document.getElementById('trace-list');
+      if (!trace || trace.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No trace logged.</p>';
+        return;
+      }
+
+      let html = '';
+      trace.forEach((step, i) => {
+        html += `
+          <div class="trace-item">
+            <div class="trace-step-num">${i + 1}</div>
+            <div class="trace-content">
+              <div class="trace-name">${step.step_name}</div>
+              <div class="trace-desc">${step.description}</div>
+              <div class="trace-json">${escapeHtml(JSON.stringify(step.output, null, 2))}</div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function toggleCollapsible(el) {
+      const body = el.nextElementSibling;
+      body.classList.toggle('show');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function loadObservabilityData() {
+      try {
+        const resp = await fetch('/api/langfuse/export');
+        if (!resp.ok) return;
+        const data = await resp.json();
+
+        document.getElementById('obs-avg-latency').innerText = data.avg_latency_s + 's';
+        document.getElementById('obs-avg-cost').innerText = '$' + (data.total_cost_usd / Math.max(data.total_queries, 1)).toFixed(5);
+        document.getElementById('obs-avg-ans-p').innerText = (data.avg_answer_precision * 100).toFixed(1) + '%';
+        document.getElementById('obs-avg-ctx-p').innerText = (data.avg_context_precision * 100).toFixed(1) + '%';
+
+        const tbody = document.getElementById('obs-table-body');
+        let html = '';
+        data.traces.forEach(t => {
+          html += `
+            <tr>
+              <td><strong>${t.qid}</strong></td>
+              <td>${t.usage.latency_s}s</td>
+              <td style="color: var(--accent-emerald);">$${t.usage.cost_usd.toFixed(5)}</td>
+              <td>${t.usage.input_tokens} / ${t.usage.output_tokens}</td>
+              <td>${t.retrieved_chunks_count} / ${t.gold_chunks_count}</td>
+              <td>${(t.scores.answer_precision * 100).toFixed(1)}%</td>
+              <td>${(t.scores.answer_recall * 100).toFixed(1)}%</td>
+              <td>${(t.scores.context_precision * 100).toFixed(1)}%</td>
+              <td>${(t.scores.context_recall * 100).toFixed(1)}%</td>
+              <td><a href="${t.trace_url}" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">${t.id.substring(0, 8)}...</a></td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (e) {
+        console.error("Failed to load observability data:", e);
+      }
+    }
+  </script>
+</body>
+</html>
